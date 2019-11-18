@@ -1,0 +1,120 @@
+{
+  "Parameters": {
+    "SolrUrl": {
+      "Type": "string",
+      "DefaultValue": "https://localhost:8983/solr",
+      "Description": "The Solr instance url."
+    },
+    "SolrRoot": {
+      "Type": "string",
+      "DefaultValue": "c:\\solr-7.2.1",
+      "Description": "The file path to the Solr instance."
+    },
+    "SolrService": {
+      "Type": "string",
+      "DefaultValue": "Solr-7.2.1",
+      "Description": "The name of the Solr service."
+    },
+    "SolrSchemas": {
+      "Type": "string",
+      "Description": "The path to solr schema files."
+    },
+    "BaseConfig": {
+      "Type": "string",
+      "DefaultValue": "_default",
+      "Description": "The configset to copy as a base for each core."
+    },
+    "CorePrefix": {
+      "Type": "string",
+      "DefaultValue": "",
+      "Description": "The prefix for each of the created indexes."
+    }
+  },
+  "Variables": {
+    // Variables are values calculated in a configuration.
+    // They can reference Parameters, other Variables, and config functions.
+
+    // Resolves the full path to Solr on disk in case a relative path was passed.
+    "Solr.FullRoot": "[resolvepath(parameter('SolrRoot'))]",
+
+    // Resolves the full solr folder path on disk.
+    "Solr.Server": "[joinpath(variable('Solr.FullRoot'), 'server', 'solr')]",
+
+    // Resolves the full path for the base configset to use for each core.
+    "Solr.BaseConfigs": "[joinpath(variable('Solr.Server'), 'configsets', parameter('BaseConfig'))]",
+
+    // Resolves the full path for the schemas to use for each core.
+	  "Solr.PromotionsSchema": "[concat(parameter('SolrSchemas'), '\\Promotions')]",
+
+    // The names of the cores to create.
+	  "Promotions.Name": "[concat(parameter('CorePrefix'), 'PromotionsScope')]",
+
+    // The destination paths of the cores to create.
+	  "Promotions.Root": "[joinpath(variable('Solr.Server'), variable('Promotions.Name'))]",
+
+    // The destination paths for the base configurations of each core.
+    "Promotions.Conf": "[joinpath(variable('Promotions.Root'), 'conf')]"
+  },
+  "Tasks": {
+    // Tasks are separate units of work in a configuration.
+    // Each task is an action that will be completed when Install-SitecoreConfiguration is called.
+    // By default, tasks are applied in the order they are declared.
+    // Tasks may reference Parameters, Variables, and config functions.
+
+    "StopSolr": {
+      // Stops the Solr service if it is running.
+      "Type": "ManageService",
+      "Params": {
+        "Name": "[parameter('SolrService')]",
+        "Status": "Stopped",
+        "PostDelay": 1000
+      }
+    },
+    "CleanCores": {
+      // Creates/clears core paths.
+      "Type": "EnsurePath",
+      "Params": {
+        "Clean": [
+		      "[variable('Promotions.Root')]"
+        ]
+      }
+    },
+    "PrepareCores": {
+      // Copies base configs into the core paths.
+      "Type": "Copy",
+      "Params": [
+		    { "Source": "[joinpath(variable('Solr.BaseConfigs'), '*')]", "Destination": "[variable('Promotions.Root')]" }
+      ]
+    },
+    "CopySchemaFiles": {
+      "Type": "Copy",
+      "Params": [
+		    { "Source": "[joinpath(variable('Solr.PromotionsSchema'), '*')]", "Destination": "[variable('Promotions.Conf')]" }
+      ]
+    },
+    "StartSolr": {
+      // Starts the Solr service.
+      "Type": "ManageService",
+      "Params": {
+        "Name": "[parameter('SolrService')]",
+        "Status": "Running",
+        "PostDelay": 8000
+      }
+    },
+    "CreateCores": {
+      // Tells Solr to create the new cores.
+      "Type": "ManageSolrCore",
+      "Params": [
+        {
+          "Action": "Create",
+          "Address": "[parameter('SolrUrl')]",
+          "Arguments": {
+            "name": "[variable('Promotions.Name')]",
+            "configset": "[parameter('BaseConfig')]",
+            "property.update.autoCreateFields": "false"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "AppSettings": {
+    "SiteTitle": "PlaceholderForSiteTitle",
+    "BootStrapFile": "Global",
+    "DeploymentId": "Deployment01",
+    "EnvironmentName": "PlaceholderForEnvironmentName",
+    "EncryptionProtectionType": "Machine",
+    "EncryptionCertificateHash": "Enter a valid certificate thumbprint for a PXF file. X-509 not supported yet",
+    "EncryptionSID": "Enter a valid SID for a domain registered user",
+    "EncryptionKeyStorageLocation": "D:\\home\\site\\wwwroot\\Encryption-Keys\\",
+    "SitecoreIdentityServerUrl": "PlaceHolderFoSitecoreIdentityServerUrl",
+    "AllowedOrigins": [
+      "PlaceHolderForBizFxUrl",
+      "PlaceHolderForSxaStorefrontUrl"
+    ],
+    "AntiForgeryEnabled": "PlaceholderForAntiForgeryEnabled",
+    "CommerceServicesHostPostfix": "PlaceholderForCommerceServicesHostPostfix",
+    "UseHttpsInKestrel": false
+  },
+  "ApplicationInsights": {
+    "InstrumentationKey": "PlaceholderForApplicationInsightsKey",
+    "MinimumLevel": "Warning",
+	  "DeveloperMode": false,
+    "TelemetryEnabled": true
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Warning",
+      "System": "Warning",
+      "Microsoft": "Warning"
+    },
+    "ApplicationInsightsLoggingEnabled": true,
+    "PipelineTraceLoggingEnabled": false,
+    "SerilogLoggingEnabled": false
+  },
+  "Serilog": {
+    "Using":  ["Serilog.Sinks.Literate", "Serilog.Sinks.File"],
+    "MinimumLevel": {
+      "Default": "Warning",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "FileSizeLimitBytes": 100000000
+  },
+  "Certificates": {
+    "Certificates": [
+      {
+        "Thumbprint": "PlaceholderForCertificateThumbprint",
+        "DefaultRoles": [
+          "sitecore\\QA",
+          "sitecore\\Commerce Business User"
+        ]
+      }
+    ],
+    "CertificateHeaderName": "X-CommerceEngineCert"
+  } 
+}

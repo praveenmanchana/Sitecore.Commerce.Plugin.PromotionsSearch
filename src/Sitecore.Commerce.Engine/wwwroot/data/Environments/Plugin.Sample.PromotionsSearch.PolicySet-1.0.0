@@ -1,0 +1,121 @@
+{
+  "$type": "Sitecore.Commerce.Core.PolicySet, Sitecore.Commerce.Core",
+  "Id": "Entity-PolicySet-PromotionsSearchPolicySet",
+  "Version": 1,
+  "IsPersisted": false,
+  "Name": "PromotionsSearchPolicySet",
+  "Policies": {
+    "$type": "System.Collections.Generic.List`1[[Sitecore.Commerce.Core.Policy, Sitecore.Commerce.Core]], mscorlib",
+    "$values": [
+      {
+        "$type": "Sitecore.Commerce.Plugin.Search.SearchScopePolicy, Sitecore.Commerce.Plugin.Search",
+        "Name": "Commerce91_PromotionsScope",
+        "IncrementalListName": "PromotionsIndex",
+        "FullListName": "Promotions",
+        "DeletedListName": "DeletedPromotionsIndex",
+        "EntityTypeNames": {
+          "$type": "System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",
+          "$values": [
+            "Sitecore.Commerce.Plugin.Promotions.Promotion"
+          ]
+        },
+        "ResultDetailsTags": {
+          "$type": "System.Collections.Generic.List`1[[Sitecore.Commerce.Core.Tag, Sitecore.Commerce.Core]], mscorlib",
+          "$values": [
+            {
+              "$type": "Sitecore.Commerce.Core.Tag, Sitecore.Commerce.Core",
+              "Name": "PromotionsTable"
+            }
+          ]
+        }
+      },
+      {
+        "$type": "Sitecore.Commerce.Plugin.Search.IndexablePolicy, Sitecore.Commerce.Plugin.Search",
+        "SearchScopeName": "Commerce91_PromotionsScope",
+        "Properties": {
+          "EntityId": {
+            "TypeName": "System.String",
+            "IsKey": true,
+            "IsSearchable": true,
+            "IsFilterable": false,
+            "IsSortable": false,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "Name": {
+            "TypeName": "System.String",
+            "IsKey": false,
+            "IsSearchable": true,
+            "IsFilterable": true,
+            "IsSortable": false,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "Description": {
+            "TypeName": "System.String",
+            "IsKey": false,
+            "IsSearchable": true,
+            "IsFilterable": true,
+            "IsSortable": false,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "Status": {
+            "TypeName": "System.String",
+            "IsKey": false,
+            "IsSearchable": true,
+            "IsFilterable": true,
+            "IsSortable": true,
+            "IsFacetable": true,
+            "IsRetrievable": true
+          },
+          "DisplayText": {
+            "TypeName": "System.String",
+            "IsKey": false,
+            "IsSearchable": true,
+            "IsFilterable": true,
+            "IsSortable": false,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "CartText": {
+            "TypeName": "System.String",
+            "IsKey": false,
+            "IsSearchable": true,
+            "IsFilterable": true,
+            "IsSortable": false,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "ValidFrom": {
+            "TypeName": "System.DateTimeOffset",
+            "IsKey": false,
+            "IsSearchable": false,
+            "IsFilterable": true,
+            "IsSortable": true,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "ValidTo": {
+            "TypeName": "System.DateTimeOffset",
+            "IsKey": false,
+            "IsSearchable": false,
+            "IsFilterable": true,
+            "IsSortable": true,
+            "IsFacetable": false,
+            "IsRetrievable": true
+          },
+          "ArtifactStoreId": {
+            "TypeName": "System.String",
+            "IsKey": false,
+            "IsSearchable": false,
+            "IsFilterable": true,
+            "IsSortable": false,
+            "IsFacetable": false,
+            "IsRetrievable": false
+          }
+        }
+      }
+    ]
+  }
+}
