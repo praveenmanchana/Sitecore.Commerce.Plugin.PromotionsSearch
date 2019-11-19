@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Plugin.Sample.InPlaceUpgrade\Plugin.Sample.InPlaceUpgrade.csproj" />
     <ProjectReference Include="..\Plugin.Sample.Habitat\Plugin.Sample.Habitat.csproj" />
     <ProjectReference Include="..\Plugin.Sample.Payments.Braintree\Plugin.Sample.Payments.Braintree.csproj" />
+    <ProjectReference Include="..\Plugin.Sample.PromotionsSearch\Plugin.Sample.PromotionsSearch.csproj" />
     <ProjectReference Include="..\Plugin.Sample.SideBySideUpgrade\Plugin.Sample.SideBySideUpgrade.csproj" />
   </ItemGroup>
 

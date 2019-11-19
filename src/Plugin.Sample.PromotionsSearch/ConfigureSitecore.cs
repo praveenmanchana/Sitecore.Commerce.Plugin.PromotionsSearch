@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Plugin.Sample.PromotionsSearch.Pipelines.Blocks;
 using Sitecore.Commerce.Core;
+using Sitecore.Commerce.EntityViews;
 using Sitecore.Commerce.Plugin.Search;
 using Sitecore.Framework.Configuration;
 using Sitecore.Framework.Pipelines.Definitions.Extensions;
@@ -20,8 +21,11 @@ namespace Plugin.Sample.PromotionsSearch
                     .Add<InitializePromotionsIndexingViewBlock>().Before<ProcessItemsToAddOrUpdateBlock>())
 
                 .ConfigurePipeline<IFullIndexMinionPipeline>(c => c
-                    .Add<InitializePromotionsIndexingViewBlock>().After<ProcessItemsToAddOrUpdateBlock>()
-                ));
+                    .Add<InitializePromotionsIndexingViewBlock>().Before<ProcessItemsToAddOrUpdateBlock>())
+            
+                .ConfigurePipeline<ISearchPipeline>(c => c
+                    .Add<Pipelines.Blocks.ProcessDocumentSearchResultBlock>().Before<IFormatEntityViewPipeline>())
+            );
         }
     }
 }

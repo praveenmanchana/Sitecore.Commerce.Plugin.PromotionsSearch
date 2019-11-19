@@ -8,6 +8,11 @@
     "$type": "System.Collections.Generic.List`1[[Sitecore.Commerce.Core.Policy, Sitecore.Commerce.Core]], mscorlib",
     "$values": [
       {
+        "$type": "Sitecore.Commerce.Plugin.Search.SearchViewPolicy, Sitecore.Commerce.Plugin.Search",
+        "SearchScopeName": "Commerce91_PromotionsScope",
+        "ViewName": "PromotionsDashboard"
+      },
+      {
         "$type": "Sitecore.Commerce.Plugin.Search.SearchScopePolicy, Sitecore.Commerce.Plugin.Search",
         "Name": "Commerce91_PromotionsScope",
         "IncrementalListName": "PromotionsIndex",
