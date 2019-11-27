@@ -69,8 +69,28 @@
 		},
 		{
 			"name": "Search - Promotions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c32875ff-38df-40da-b7cc-59bc360eef13",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"function findBookAdded(model) {",
+							"    var type = '@odata.type';",
+							"    return model[type] === '#Sitecore.Commerce.Plugin.Pricing.PriceBookAdded';",
+							"}",
+							"",
+							"postman.setGlobalVariable(\"BookId\", \"Entity-PriceBook-\" + jsonData.Models.find(findBookAdded).Name);",
+							"postman.setGlobalVariable(\"BookName\", jsonData.Models.find(findBookAdded).Name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -97,30 +117,22 @@
 						"value": "{{Environment}}"
 					},
 					{
-						"key": "GeoLocation",
-						"value": "{{GeoLocation}}"
-					},
-					{
-						"key": "CustomerId",
-						"value": "{{CustomerId}}"
-					},
-					{
 						"key": "Authorization",
 						"value": "{{SitecoreIdToken}}"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"@odata.type\": \"#Sitecore.Commerce.EntityViews.EntityView\",\n  \"Name\": \"Search\",\n  \"Policies\": [\n    {\n      \"@odata.type\": \"#Sitecore.Commerce.Plugin.Search.SearchScopePolicy\",\n      \"PolicyId\": \"a756af6e68e04734939ee7e8f62f76bd\",\n      \"Models\": [],\n      \"FullListName\": \"Promotions\",\n      \"EntityTypeNames\": [\"Sitecore.Commerce.Plugin.Promotions.Promotion\"],\n      \"IncrementalListName\": \"PromotionsIndex\",\n      \"DeletedListName\": \"DeletedPromotionsIndex\",\n      \"Name\": \"Commerce91_PromotionsScope\",\n      \"ResultDetailsTags\": [\n        {\n          \"Name\": \"PromotionsTable\",\n          \"Policies\": [],\n          \"Excluded\": false\n        }\n      ]\n    },\n    {\n      \"@odata.type\": \"#Sitecore.Commerce.EntityViews.ActionsPolicy\",\n      \"PolicyId\": \"37c6475fb2a744d8b07effd93c7de1f0\",\n      \"Models\": [],\n      \"Actions\": [\n        {\n          \"Name\": \"Search\",\n          \"Policies\": [],\n          \"DisplayName\": \"Search\",\n          \"Description\": \"Search\",\n          \"IsEnabled\": true,\n          \"RequiresConfirmation\": false,\n          \"UiHint\": null,\n          \"EntityView\": \"Search\",\n          \"Icon\": \"search\"\n        }\n      ]\n    }\n  ],\n  \"DisplayName\": \"Search\",\n  \"EntityId\": null,\n  \"Action\": \"Search\",\n  \"ItemId\": null,\n  \"Properties\": [\n    {\n      \"Name\": \"Term\",\n      \"Policies\": [],\n      \"DisplayName\": \"Term\",\n      \"Value\": \"*\",\n      \"IsHidden\": false,\n      \"OriginalType\": \"System.String\",\n      \"IsReadOnly\": false,\n      \"UiType\": \"\",\n      \"IsRequired\": true\n    },\n    {\n      \"Name\": \"Filter\",\n      \"Policies\": [],\n      \"DisplayName\": \"Filter\",\n      \"Value\": \"\",\n      \"IsHidden\": true,\n      \"OriginalType\": \"System.String\",\n      \"IsReadOnly\": false,\n      \"UiType\": \"\",\n      \"IsRequired\": false\n    },\n    {\n      \"Name\": \"OrderBy\",\n      \"Policies\": [],\n      \"DisplayName\": \"Order By\",\n      \"Value\": \"\",\n      \"IsHidden\": true,\n      \"OriginalType\": \"System.String\",\n      \"IsReadOnly\": false,\n      \"UiType\": \"\",\n      \"IsRequired\": false\n    }\n  ],\n  \"ChildViews\": [],\n  \"DisplayRank\": 500,\n  \"UiHint\": \"Search\",\n  \"Icon\": \"dashboard\"\n}"
+					"raw": "{\r\n    \"scope\":\"Commerce91_PromotionsScope\",\r\n    \"term\": \"*\",\r\n    \"filter\": \"status=Draft\",\r\n    \"orderBy\": \"\",\r\n    \"skip\": 0,\r\n    \"top\": 10\r\n} "
 				},
 				"url": {
-					"raw": "{{AuthoringHost}}/{{ShopsApi}}/DoUxAction()",
+					"raw": "{{ServiceHost}}/{{ShopsApi}}/Search()",
 					"host": [
-						"{{AuthoringHost}}"
+						"{{ServiceHost}}"
 					],
 					"path": [
 						"{{ShopsApi}}",
-						"DoUxAction()"
+						"Search()"
 					]
 				}
 			},
