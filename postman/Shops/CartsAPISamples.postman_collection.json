@@ -91,6 +91,93 @@
 					"response": []
 				},
 				{
+					"name": "Get Cart Cart01 - DoNotCalculateCart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"function findPaymentId(model) {",
+									"    var type = '@odata.type';",
+									"    return model[type] === '#Sitecore.Commerce.Plugin.GiftCards.GiftCardPaymentComponent';",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							},
+							{
+								"key": "PolicyKeys",
+								"value": "DoNotCalculateCart"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/Carts('Cart01')?$expand=Lines($expand=CartLineComponents($expand=ChildComponents)),Components",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"Carts('Cart01')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Lines($expand=CartLineComponents($expand=ChildComponents)),Components"
+								}
+							]
+						},
+						"description": "Gets the cart with the specified id and passes the key DoNotCalculateCart in the PolicyKeys header to indicate that the cart should not be recalculated."
+					},
+					"response": []
+				},
+				{
 					"name": "Delete Cart Cart01",
 					"request": {
 						"method": "DELETE",

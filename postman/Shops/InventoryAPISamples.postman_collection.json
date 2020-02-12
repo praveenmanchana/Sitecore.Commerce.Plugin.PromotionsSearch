@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4d130a4b-10d5-4188-bfd6-6c08998971f6",
+		"_postman_id": "b8016b6a-33b9-46b2-adfb-f6b5ee2e9ae8",
 		"name": "InventoryAPISamples",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -127,6 +127,65 @@
 					"response": []
 				},
 				{
+					"name": "InventorySet by UniqueId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/InventorySets('c7b14377-2ec1-6ad6-ab61-9cf11ce05ac2')",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"InventorySets('d3f7d4e6-aa56-6dfd-a83d-6b85286237ee')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "InventoryInformation (Habitat)",
 					"request": {
 						"method": "GET",
@@ -180,6 +239,65 @@
 							"path": [
 								"{{ShopsApi}}",
 								"InventoryInformation('Habitat_Inventory-6042058-56042058')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "InventoryInformation by UniqueId (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/InventoryInformation('86d75413-1b98-654b-b91d-9b41406c8a5e')",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"InventoryInformation('d75f6f6f-93c2-6dcf-97e8-56e2f7eac50e')"
 							]
 						}
 					},
@@ -380,6 +498,11 @@
 									"type": "text"
 								},
 								{
+									"key": "batchSize",
+									"value": "900",
+									"type": "text"
+								},
+								{
 									"key": "errorThreshold",
 									"value": "10",
 									"type": "text"
@@ -394,6 +517,79 @@
 							"path": [
 								"{{ShopsApi}}",
 								"ImportInventorySets()"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Local Inventory Sets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ee16e7ba-dff0-441f-9fb7-6be08ed20795",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"postman.setGlobalVariable(\"LongRunningTaskId\", jsonData.TaskId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"importFilePath\":\"\",\n    \"mode\":\"replace\",\n    \"batchSize\":\"900\",\n    \"errorThreshold\":\"10\"\n}"
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/ImportLocalInventorySets()",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"ImportLocalInventorySets()"
 							]
 						}
 					},

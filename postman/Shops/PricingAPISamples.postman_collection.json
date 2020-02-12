@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ac17a911-9ab1-4591-b367-0550d6619a2d",
+		"_postman_id": "4bde8cc1-0ae1-486f-bad5-82808a0482d8",
 		"name": "PricingAPISamples",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -258,6 +258,71 @@
 							"path": [
 								"{{ShopsApi}}",
 								"PriceBooks('{{BookName}}')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get price book by UniqueId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/PriceBooks('ceefea2a-2382-65e0-8717-eaba1eb0ebe5')?$expand=Components",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"PriceBooks('ceefea2a-2382-65e0-8717-eaba1eb0ebe5')"
 							],
 							"query": [
 								{
@@ -579,6 +644,71 @@
 							"path": [
 								"{{ShopsApi}}",
 								"PriceCards('{{CardFriendlyId}}')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Snapshots($expand=ChildComponents),Components"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get price card by UniqueId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/PriceCards('5f7467e7-cab4-6748-8827-2cba3dd449cc')?$expand=Snapshots($expand=ChildComponents),Components",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"PriceCards('5f7467e7-cab4-6748-8827-2cba3dd449cc')"
 							],
 							"query": [
 								{

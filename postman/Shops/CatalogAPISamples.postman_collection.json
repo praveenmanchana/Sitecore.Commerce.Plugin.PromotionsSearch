@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "23f0a5ca-87b3-447a-8f4b-e827e3657e11",
+		"_postman_id": "d5ca3806-daf7-4513-af58-b6a163606770",
 		"name": "CatalogAPISamples",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -50,10 +50,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Catalogs('Adventure Works Catalog')?$expand=Components($expand=ChildComponents)",
 							"host": [
@@ -115,10 +111,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Catalogs('Habitat_Master')?$expand=Components($expand=ChildComponents)",
 							"host": [
@@ -127,6 +119,67 @@
 							"path": [
 								"{{ShopsApi}}",
 								"Catalogs('Habitat_Master')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Catalog by UniqueId (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/Catalogs('0e7ab784-66a6-6782-a4ba-56dcf25427c2')?$expand=Components($expand=ChildComponents)",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"Catalogs('0e7ab784-66a6-6782-a4ba-56dcf25427c2')"
 							],
 							"query": [
 								{
@@ -180,10 +233,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Catalogs",
 							"host": [
@@ -239,10 +288,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='Catalogs',type='Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog',skip=0,take=10)?$expand=Items",
 							"host": [
@@ -304,10 +349,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Categories('Adventure Works Catalog-Backpacks')?$expand=Components($expand=ChildComponents)",
 							"host": [
@@ -369,10 +410,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Categories('Habitat_Master-Audio')?$expand=Components($expand=ChildComponents)",
 							"host": [
@@ -381,6 +418,67 @@
 							"path": [
 								"{{ShopsApi}}",
 								"Categories('Habitat_Master-Audio')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Category by UniqueId (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/Categories('984e57da-7ad2-61ba-8d18-828c8a9fc86f')?$expand=Components($expand=ChildComponents)",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"Categories('984e57da-7ad2-61ba-8d18-828c8a9fc86f')"
 							],
 							"query": [
 								{
@@ -434,10 +532,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Categories",
 							"host": [
@@ -493,10 +587,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='Categories',type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -558,10 +648,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/SellableItems('Adventure Works Catalog,AW475 14,')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
 							"host": [
@@ -623,10 +709,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/SellableItems('Habitat_Master,6042134,')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
 							"host": [
@@ -688,10 +770,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/SellableItems('HabitatCatalog,6042134,56042137')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
 							"host": [
@@ -700,6 +778,128 @@
 							"path": [
 								"{{ShopsApi}}",
 								"SellableItems('HabitatCatalog,6042134,56042137')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSellableItem (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetSellableItem(entityId='Entity-SellableItem-6042134')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetSellableItem(entityId='Entity-SellableItem-6042134')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSellableItem by UniqueId (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetSellableItem(entityId='2f1ffdd5-02a0-67ec-a7a1-c156b16bfc88')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetSellableItem(entityId='2f1ffdd5-02a0-67ec-a7a1-c156b16bfc88')"
 							],
 							"query": [
 								{
@@ -753,10 +953,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/SellableItems",
 							"host": [
@@ -765,6 +961,372 @@
 							"path": [
 								"{{ShopsApi}}",
 								"SellableItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Catalog All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "en"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetCatalogItemAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog',entityId='Habitat_Master')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetCatalogItemAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog',entityId='Habitat_Master')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": " Get Catalogs All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "en"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetCatalogItemsAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog',listName='Catalogs',skip=0,take=10)?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetCatalogItemsAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog',listName='Catalogs',skip=0,take=10)"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": " Get Category All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "en"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetCatalogItemAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',entityId='Habitat_Master-Audio')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetCatalogItemAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',entityId='Habitat_Master-Audio')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "en"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetCatalogItemsAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',listName='Categories',skip=0,take=5)?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetCatalogItemsAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',listName='Categories',skip=0,take=5)"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sellable Item All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "en"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetCatalogItemAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',entityId='Habitat_Master,6042134,')?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetCatalogItemAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',entityId='Habitat_Master,6042134,')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sellable Items All Languages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "en"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetCatalogItemsAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',listName='SellableItems',skip=0,take=5)?$expand=Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetCatalogItemsAllLanguages(type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',listName='SellableItems',skip=0,take=5)"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents($expand=ChildComponents))))"
+								}
 							]
 						}
 					},
@@ -812,10 +1374,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='SellableItems',type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',skip=0,take=10)?$expand=Items($expand=Components)",
 							"host": [
@@ -958,12 +1516,17 @@
 							"formdata": [
 								{
 									"key": "importFile",
-									"type": "file",
-									"src": ""
+									"value": "",
+									"type": "file"
 								},
 								{
 									"key": "mode",
 									"value": "replace",
+									"type": "text"
+								},
+								{
+									"key": "batchSize",
+									"value": "900",
 									"type": "text"
 								},
 								{
@@ -1050,12 +1613,17 @@
 							"formdata": [
 								{
 									"key": "importFile",
-									"type": "file",
-									"src": ""
+									"value": "",
+									"type": "file"
 								},
 								{
 									"key": "mode",
 									"value": "replace",
+									"type": "text"
+								},
+								{
+									"key": "batchSize",
+									"value": "900",
 									"type": "text"
 								},
 								{
@@ -1078,6 +1646,83 @@
 							"path": [
 								"{{ShopsApi}}",
 								"ImportCatalogs()"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Local Catalogs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1decb04c-5536-422e-b520-524f2c9154a7",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"postman.setGlobalVariable(\"LongRunningTaskId\", jsonData.TaskId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							},
+							{
+								"key": "PolicyKeys",
+								"value": "IgnoreIndexDeletedSitecoreItem|IgnoreAddEntityToIndexList|IgnoreIndexUpdatedSitecoreItem|IgnoreLocalizeEntity"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"importFilePath\":\"\",\n    \"mode\":\"replace\",\n    \"batchSize\":\"900\",\n    \"errorThreshold\":\"10\",\n    \"publish\":false\n}"
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/ImportLocalCatalogs()",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"ImportLocalCatalogs()"
 							]
 						}
 					},
@@ -1150,6 +1795,65 @@
 							"path": [
 								"{{ShopsApi}}",
 								"CloneCatalog()"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sellable Items Summary",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"itemIds\": [\n      \"Habitat_Master|6001001|\",\n      \"Habitat_Master|6042059|\",\n      \"Habitat_Master|6042058|\",\n      \"Habitat_Master|6042271|56042271\",\n      \"Habitat_Master|6042175|56042175\",\n      \"Habitat_Master|6042134|\",\n      \"Habitat_Master|6042134|56042137\"\n  ],\n  \"includeBundledItems\": true\n}\n"
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetSellableItemsSummary()",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"GetSellableItemsSummary()"
 							]
 						}
 					},
@@ -4252,10 +4956,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='CatalogToCategory-Habitat_Master',type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -4317,10 +5017,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='CategoryToCategory-Habitat_Master-Audio',type='Sitecore.Commerce.Plugin.Catalog.Category, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -4382,10 +5078,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='CatalogToSellableItem-Habitat_Master',type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -4447,10 +5139,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='CategoryToSellableItem-Habitat_Master-Audio',type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -4571,10 +5259,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Relationships('SimilarSellableItem')",
 							"host": [
@@ -4630,10 +5314,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='SimilarSellableItem-Habitat_Master-6042068',type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -4695,10 +5375,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetList(id='RelatedProduct-6042068',type='Sitecore.Commerce.Plugin.Catalog.SellableItem, Sitecore.Commerce.Plugin.Catalog',skip=0,take=100)?$expand=Items",
 							"host": [
@@ -4760,10 +5436,6 @@
 								"value": "{{SitecoreIdToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{ShopsApi}}/Relationships",
 							"host": [
@@ -4826,16 +5498,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"itemIds\": [\n      \"Habitat_Master|6042264|\",\n      \"Habitat_Master|6042265|\",\n      \"Habitat_Master|6042266|\",\n      \"Habitat_Master|6042269|\",\n      \"Habitat_Master|6042272|\",\n      \"Habitat_Master|6042275|\",\n      \"Habitat_Master|6042277|\",\n      \"Habitat_Master|6042278|\",\n      \"Habitat_Master|6042279|\",\n      \"Habitat_Master|6042281|\",\n      \"Habitat_Master|6042282|\",\n      \"Habitat_Master|6042284|\"\n  ]\n}\n"
+							"raw": "{\n  \"itemIds\": [\n      \"Habitat_Master|6001001|\",\n      \"Habitat_Master|6042134|\",\n      \"Habitat_Master|6042134|56042137\"\n  ],\n  \"includeBundledItems\": true\n}\n"
 						},
 						"url": {
-							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetBulkPrices()",
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/GetSellableItemsSummary()",
 							"host": [
 								"{{ServiceHost}}"
 							],
 							"path": [
 								"{{ShopsApi}}",
-								"GetBulkPrices()"
+								"GetSellableItemsSummary()"
 							]
 						}
 					},
