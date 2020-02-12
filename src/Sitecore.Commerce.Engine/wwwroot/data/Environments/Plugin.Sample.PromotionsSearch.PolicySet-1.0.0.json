@@ -9,12 +9,12 @@
     "$values": [
       {
         "$type": "Sitecore.Commerce.Plugin.Search.SearchViewPolicy, Sitecore.Commerce.Plugin.Search",
-        "SearchScopeName": "Commerce91_PromotionsScope",
+        "SearchScopeName": "sc92_PromotionsScope",
         "ViewName": "PromotionsDashboard"
       },
       {
         "$type": "Sitecore.Commerce.Plugin.Search.SearchScopePolicy, Sitecore.Commerce.Plugin.Search",
-        "Name": "Commerce91_PromotionsScope",
+        "Name": "sc92_PromotionsScope",
         "IncrementalListName": "PromotionsIndex",
         "FullListName": "Promotions",
         "DeletedListName": "DeletedPromotionsIndex",
@@ -36,7 +36,7 @@
       },
       {
         "$type": "Sitecore.Commerce.Plugin.Search.IndexablePolicy, Sitecore.Commerce.Plugin.Search",
-        "SearchScopeName": "Commerce91_PromotionsScope",
+        "SearchScopeName": "sc92_PromotionsScope",
         "Properties": {
           "EntityId": {
             "TypeName": "System.String",

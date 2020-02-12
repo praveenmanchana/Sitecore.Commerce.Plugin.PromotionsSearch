@@ -6,12 +6,12 @@ Import-Module SitecoreInstallFramework
 Invoke-Command -ScriptBlock {
   Set-Location -Path $PSScriptRoot
 
-  $Prefix = 'Commerce91'
+  $Prefix = 'sc92'
   $ConfigurationPath = $PSScriptRoot
   $SolrSchemasPath = Join-Path -Path $PSScriptRoot -ChildPath 'SolrSchemas'
-  $SolrPath = ('{0}\solr-7.2.1' -f $env:HOMEDRIVE)
-  $SolrUrl = 'https://localhost:8983/solr'
-  $SolrServiceName = 'solr 7.2.1'
+  $SolrPath = 'C:\tools\solr-7.5.0'
+  $SolrUrl = 'https://solr750:8750/solr'
+  $SolrServiceName = 'solr-7.5.0'
   
   $commerceEngineConfigurationPath = Join-Path -Path $ConfigurationPath -ChildPath 'promotions-commerce-solr.json'
   
