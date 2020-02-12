@@ -15,7 +15,7 @@
             {
                 Shop = Sample.Console.Program.DefaultStorefront,
                 ShopperId = "ShopperSteveId",
-                Environment = "HabitatShops",
+                Environment = EnvironmentConstants.HabitatShops,
                 Language = "en-US",
                 Currency = "USD",
                 PolicyKeys = "ZeroMinionDelay|xActivityPerf",

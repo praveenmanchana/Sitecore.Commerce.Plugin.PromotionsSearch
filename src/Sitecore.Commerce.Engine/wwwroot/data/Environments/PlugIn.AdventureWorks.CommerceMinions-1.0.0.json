@@ -12,20 +12,10 @@
             "CommerceEnvironments"
           ]
         },
-        "Id": "c132ddc8e1b24a0ca378b6d069c14b84",
-        "Policies": {
-          "$type": "System.Collections.Generic.List`1[[Sitecore.Commerce.Core.Policy, Sitecore.Commerce.Core]], mscorlib",
-          "$values": []
-        },
-        "ChildComponents": {
-          "$type": "System.Collections.Generic.List`1[[Sitecore.Commerce.Core.Component, Sitecore.Commerce.Core]], mscorlib",
-          "$values": []
-        }
+        "Id": "c132ddc8e1b24a0ca378b6d069c14b84"
       }
     ]
   },
-  "DateCreated": "2016-09-23T18:04:08.1660038Z",
-  "DateUpdated": "2016-09-23T18:04:08.1760227Z",
   "Id": "Entity-CommerceEnvironment-AdventureWorksMinions",
   "Version": 1,
   "IsPersisted": false,
@@ -33,7 +23,7 @@
   "Policies": {
     "$type": "System.Collections.Generic.List`1[[Sitecore.Commerce.Core.Policy, Sitecore.Commerce.Core]], mscorlib",
     "$values": [
-     {
+      {
         "$type": "Sitecore.Commerce.Core.PolicySetPolicy, Sitecore.Commerce.Core",
         "PolicySetId": "Entity-PolicySet-MinionsPolicySet"
       },
@@ -48,7 +38,11 @@
       },
       {
         "$type": "Sitecore.Commerce.Core.PolicySetPolicy, Sitecore.Commerce.Core",
-        "PolicySetId": "Entity-PolicySet-MinionsMemoryCachePolicySet"
+        "PolicySetId": "Entity-PolicySet-CachingPolicySet"
+      },
+      {
+        "$type": "Sitecore.Commerce.Core.PolicySetPolicy, Sitecore.Commerce.Core",
+        "PolicySetId": "Entity-PolicySet-VersioningPolicySet"
       },
       {
         "$type": "Sitecore.Commerce.Core.PolicySetPolicy, Sitecore.Commerce.Core",
@@ -94,7 +88,12 @@
         "$type": "Sitecore.Commerce.Core.GlobalEnvironmentPolicy, Sitecore.Commerce.Core",
         "Languages": {
           "$type": "System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",
-          "$values": [ "en", "de-DE", "ja-JP", "fr-FR" ]
+          "$values": [
+            "en",
+            "de-DE",
+            "ja-JP",
+            "fr-FR"
+          ]
         },
         "DefaultCurrency": "USD",
         "DefaultCountry": {
@@ -214,7 +213,7 @@
         "$type": "Sitecore.Commerce.Plugin.Inventory.GlobalInventoryPolicy, Sitecore.Commerce.Plugin.Inventory",
         "CheckStockLevel": true,
         "SubtractStockOnOrder": true,
-        "DefaultAllocationDateAvailable": "0001-01-01T00:00:00+00:00"
+        "DefaultAllocationDateAvailable": "0001-01-01T00:00:00-05:00"
       },
       {
         "$type": "Sitecore.Commerce.Core.GlobalCurrencyPolicy, Sitecore.Commerce.Core",

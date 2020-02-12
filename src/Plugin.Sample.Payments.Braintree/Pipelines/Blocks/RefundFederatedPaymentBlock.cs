@@ -127,7 +127,7 @@ namespace Plugin.Sample.Payments.Braintree
 
                 if (existingPayment.Amount.Amount == paymentToRefund.Amount.Amount)
                 {
-                    order.Components.Remove(existingPayment);
+                    order.RemoveComponents(existingPayment);
                 }
                 else 
                 {
@@ -165,15 +165,16 @@ namespace Plugin.Sample.Payments.Braintree
         {
             var salesActivity = new SalesActivity
             {
-                Id = CommerceEntity.IdPrefix<SalesActivity>() + Guid.NewGuid().ToString("N", System.Globalization.CultureInfo.InvariantCulture),
+                Id = $"{CommerceEntity.IdPrefix<SalesActivity>()}{Guid.NewGuid():N}",
                 ActivityAmount = new Money(existingPayment.Amount.CurrencyCode, paymentToRefund.Amount.Amount * -1),
                 Customer = new EntityReference
                 {
-                    EntityTarget = order.Components.OfType<ContactComponent>().FirstOrDefault()?.CustomerId
+                    EntityTarget = order.EntityComponents.OfType<ContactComponent>().FirstOrDefault()?.CustomerId
                 },
                 Order = new EntityReference
                 {
-                    EntityTarget = order.Id
+                    EntityTarget = order.Id,
+                    EntityTargetUniqueId = order.UniqueId
                 },
                 Name = "Refund the Federated Payment",
                 PaymentStatus = context.GetPolicy<KnownSalesActivityStatusesPolicy>().Completed
@@ -200,7 +201,7 @@ namespace Plugin.Sample.Payments.Braintree
             }
 
             var salesActivities = order.SalesActivity.ToList();
-            salesActivities.Add(new EntityReference { EntityTarget = salesActivity.Id });
+            salesActivities.Add(new EntityReference { EntityTarget = salesActivity.Id, EntityTargetUniqueId = salesActivity.UniqueId });
             order.SalesActivity = salesActivities;
 
             await this._persistPipeline.Run(new PersistEntityArgument(salesActivity), context).ConfigureAwait(false);

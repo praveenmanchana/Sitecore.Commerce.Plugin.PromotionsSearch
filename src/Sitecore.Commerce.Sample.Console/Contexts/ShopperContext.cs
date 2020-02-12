@@ -1,6 +1,4 @@
-﻿using Sitecore.Commerce.Sample.Console.Authentication;
-
-namespace Sitecore.Commerce.Sample
+﻿namespace Sitecore.Commerce.Sample
 {
     using System;
     using System.Collections.Generic;
@@ -28,10 +26,10 @@ namespace Sitecore.Commerce.Sample
             this.CustomerId = "DefaultCustomerId";
             this.PolicyKeys = string.Empty;
             this.GiftCards = new List<string>
-                                 {
-                                     "GC1000000",
-                                     "GC100"
-                                 };
+            {
+                "GC1000000",
+                "GC100"
+            };
         }
 
         public bool IsRegistered { get; set; }
@@ -121,6 +119,7 @@ namespace Sitecore.Commerce.Sample
             container.BuildingRequest += (s, e) =>
             {
                 e.Headers.Add("PolicyKeys", this.PolicyKeys);
+                e.Headers.Add("Environment", this.Environment);
                 e.Headers.Add("Authorization", Console.Program.SitecoreToken);
             };
 
@@ -138,6 +137,7 @@ namespace Sitecore.Commerce.Sample
             container.BuildingRequest += (s, e) =>
             {
                 e.Headers.Add("PolicyKeys", this.PolicyKeys);
+                e.Headers.Add("Environment", this.Environment);
                 e.Headers.Add("Authorization", Console.Program.SitecoreToken);
             };
 

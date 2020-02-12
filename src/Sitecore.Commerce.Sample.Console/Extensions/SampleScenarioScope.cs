@@ -15,17 +15,19 @@
         {
             this._scenarioName = scenarioName;
             this._watch.Start();
-            Console.WriteLine($"[Begin Scenario] {this._scenarioName}");
+            ConsoleExtensions.WriteColoredLine(ConsoleColor.White, $"[Begin Scenario] {this._scenarioName}");
         }
 
         public void Dispose()
         {
-            if (!this._disposed)
+            if (this._disposed)
             {
-                this._watch.Stop();
-                Console.WriteLine($"[End Scenario] {this._scenarioName} : {this._watch.Elapsed}");
-                this._disposed = true;
+                return;
             }
+
+            this._watch.Stop();
+            ConsoleExtensions.WriteColoredLine(ConsoleColor.White, $"[End Scenario] {this._scenarioName} : {this._watch.Elapsed}");
+            this._disposed = true;
         }
     }
 }

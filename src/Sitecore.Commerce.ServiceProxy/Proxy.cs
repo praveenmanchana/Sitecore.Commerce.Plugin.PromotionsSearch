@@ -1,25 +1,20 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Proxy.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2015 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using Microsoft.OData.Client;
+using Sitecore.Commerce.Core;
+using Sitecore.Commerce.Core.Commands;
+using Sitecore.Commerce.Engine;
+using Sitecore.Commerce.EntityViews;
+using Sitecore.Commerce.ServiceProxy.Exceptions;
+using Sitecore.Diagnostics;
 
 namespace Sitecore.Commerce.ServiceProxy
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Threading;
-
-    using Microsoft.OData.Client;
-
-    using Sitecore.Commerce.Core;
-    using Sitecore.Commerce.Core.Commands;
-    using Sitecore.Commerce.Engine;
-    using Sitecore.Commerce.ServiceProxy.Exceptions;
-    using Sitecore.Diagnostics;
-
     /// <summary>
     /// Defines the commerce odata proxy.
     /// </summary>
@@ -63,6 +58,7 @@ namespace Sitecore.Commerce.ServiceProxy
                             switch (dataserviceQueryException.Response.StatusCode)
                             {
                                 case 404:
+
                                     // If the item is not found, we return a null.
                                     // That is easier to code for than throwing an exception
                                     LogError($"Entity Not Found Exception (404) - Query: {dataserviceQueryException.Response.Query} - Message:{dataserviceQueryException.Message}", typeof(Proxy));
@@ -331,7 +327,7 @@ namespace Sitecore.Commerce.ServiceProxy
         /// <param name="itemId">The item identifier.</param>
         /// <returns>A <see cref="Sitecore.Commerce.EntityViews.EntityView"/></returns>
         /// <exception cref="CommerceServiceQuerySingleException"></exception>
-        public static Sitecore.Commerce.EntityViews.EntityView GetEntityView(Container container, string entityId, string viewName, string forAction, string itemId)
+        public static EntityView GetEntityView(Container container, string entityId, string viewName, string forAction, string itemId)
         {
             var watch = new Stopwatch();
             watch.Start();
@@ -374,7 +370,7 @@ namespace Sitecore.Commerce.ServiceProxy
                     LogError($"Exception {ex.GetType()}: {ex.Message}  GetEntityView: entityId = {entityId}, viewName = {viewName}, forAction = {forAction}, itemId = {itemId}", typeof(Proxy));
                     throw;
                 }
-                
+
                 tries++;
                 Thread.Sleep(100);
             }
@@ -434,9 +430,11 @@ namespace Sitecore.Commerce.ServiceProxy
                 switch (activityPerf.Name)
                 {
                     case "GetEnvironmentCommand":
+
                         // Do Nothing
                         break;
                     case "ValidateContextCommand":
+
                         // Do Nothing
                         break;
                     default:

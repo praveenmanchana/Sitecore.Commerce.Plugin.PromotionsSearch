@@ -1,11 +1,13 @@
 ﻿namespace Sitecore.Commerce.Sample.Console
 {
-    using System;
-    using System.Diagnostics;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+
     using FluentAssertions;
 
+    using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Plugin.Composer;
-
     using Sitecore.Commerce.Sample.Contexts;
     using Sitecore.Commerce.ServiceProxy;
 
@@ -13,42 +15,45 @@
     {
         private static Sitecore.Commerce.Engine.Container _authoringContainer;
 
-        public  static void RunScenarios()
+        public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
+            using (new SampleScenarioScope("Composer"))
+            {
+                var context = new CsrSheila().Context;
+                context.Environment = EnvironmentConstants.AdventureWorksAuthoring;
+                _authoringContainer = context.ShopsContainer();
 
-            Console.WriteLine("Begin Composer");
-
-            var context = new CsrSheila().Context;
-            context.Environment = "AdventureWorksAuthoring";
-            _authoringContainer = context.ShopsContainer();
-
-            GetComposerTemplate("MyConsoleTemplate");
-            GetComposerTemplates();
-            
-            watch.Stop();
-
-            Console.WriteLine($"End PricingBooksAndCards :{watch.ElapsedMilliseconds} ms");
+                var templates = GetComposerTemplates();
+                GetComposerTemplate(templates.FirstOrDefault().Id);
+            }
         }
-        
-        private static void GetComposerTemplate(string templateName)
-        {
-            Console.WriteLine("Begin GetComposerTemplate");
-          
-            var result = Proxy.GetValue(_authoringContainer.ComposerTemplates.ByKey(templateName).Expand("Components"));
-            result.Should().NotBeNull();
 
-            result = Proxy.GetValue(_authoringContainer.ComposerTemplates.ByKey($"Entity-ComposerTemplate-{templateName}").Expand("Components"));
-            result.Should().NotBeNull();
-        }
-        
-        private static void GetComposerTemplates()
+        private static void GetComposerTemplate(string templateId)
         {
-            Console.WriteLine("Begin GetComposerTemplate");
-            
-            var result = _authoringContainer.ComposerTemplates.Expand("Components").Execute();
-            result.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(
+                    _authoringContainer.ComposerTemplates.ByKey(templateId).Expand("Components"));
+                result.Should().NotBeNull();
+
+                result = Proxy.GetValue(
+                    _authoringContainer.ComposerTemplates.ByKey(templateId.ToEntityName<ComposerTemplate>())
+                        .Expand("Components"));
+                result.Should().NotBeNull();
+            }
+        }
+
+        private static List<ComposerTemplate> GetComposerTemplates()
+        {
+            using (new SampleMethodScope())
+            {
+                var result = _authoringContainer.ComposerTemplates.Expand("Components").Execute();
+                var composerTemplates = result as List<ComposerTemplate> ?? result.ToList();
+                composerTemplates.Should().NotBeNull();
+                composerTemplates.Should().NotBeEmpty();
+
+                return composerTemplates;
+            }
         }
     }
 }

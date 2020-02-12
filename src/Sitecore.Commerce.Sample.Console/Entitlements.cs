@@ -1,7 +1,6 @@
 ﻿namespace Sitecore.Commerce.Sample.Console
 {
     using System;
-    using System.Diagnostics;
     using System.Linq;
 
     using FluentAssertions;
@@ -19,12 +18,7 @@
     {
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            Console.WriteLine("Begin Entitlements");
-
-            try
+            using (new SampleScenarioScope("Entitlements"))
             {
                 // Adventure Works
                 var jeff = new AnonymousCustomerJeff();
@@ -39,119 +33,133 @@
                 BuyInstallation(steve.Context);
                 BuySubscription(steve.Context);
                 BuyOneOfEach(steve.Context);
-
                 BuyGiftCardAuthenticated(jeff.Context);
             }
-            catch (Exception ex)
-            {
-                ConsoleExtensions.WriteColoredLine(ConsoleColor.Red, $"Exception in Scenario 'Entitlements' ({ex.Message}) : Stack={ex.StackTrace}");
-            }
-
-            watch.Stop();
-
-            Console.WriteLine($"End Entitlements :{watch.ElapsedMilliseconds} ms");
         }
 
         private static void BuyPhysicalAndGiftCard(ShopperContext context)
         {
-            var orderId = Scenarios.Simple2PhysicalDigitalItems.Run(context).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.Simple2PhysicalDigitalItems.Run(context);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 1, typeof(GiftCard));
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 1, typeof(GiftCard));
+            }
         }
 
         private static void BuyGiftCard(ShopperContext context)
         {
-            var orderId = Scenarios.BuyGiftCard.Run(context, 2).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.BuyGiftCard.Run(context, 2);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 2, typeof(GiftCard));
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 2, typeof(GiftCard));
+            }
         }
 
         private static void BuyGiftCardAuthenticated(ShopperContext context)
         {
-            var customerId = CustomersUX.AddCustomer(CustomersUX.GenerateRandomUserName());
-            customerId.Should().NotBeNullOrEmpty();
+            using (new SampleMethodScope())
+            {
+                var customerId = CustomersUX.AddCustomer(CustomersUX.GenerateRandomUserName());
+                customerId.Should().NotBeNullOrEmpty();
 
-            context.CustomerId = customerId;
-            context.ShopperId = customerId;
-            context.IsRegistered = true;
+                context.CustomerId = customerId;
+                context.ShopperId = customerId;
+                context.IsRegistered = true;
 
-            var orderId = Scenarios.BuyGiftCard.Run(context, 1).Result;
-            orderId.Should().NotBeNull();
+                var orderId = Scenarios.BuyGiftCard.Run(context, 1);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            var customer = ValidateCustomer(context, customerId);
-            ValidateEntitlements(context, order, customer, 1, typeof(GiftCard));
+                var order = ValidateOrder(context, orderId);
+                var customer = ValidateCustomer(context, customerId);
+                ValidateEntitlements(context, order, customer, 1, typeof(GiftCard));
+            }
         }
 
         private static void BuyGiftCards(ShopperContext context)
         {
-            var orderId = Scenarios.BuyGiftCards.Run(context).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.BuyGiftCards.Run(context);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 2, typeof(GiftCard));
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 2, typeof(GiftCard));
+            }
         }
 
         private static void BuyWarranty(ShopperContext context)
         {
-            var orderId = Scenarios.BuyWarranty.Run(context, 1).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.BuyWarranty.Run(context, 1);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 1, typeof(Warranty));
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 1, typeof(Warranty));
+            }
         }
 
         private static void BuyInstallation(ShopperContext context)
         {
-            var orderId = Scenarios.BuyInstallation.Run(context, 1).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.BuyInstallation.Run(context, 1);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 1, typeof(Installation));
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 1, typeof(Installation));
+            }
         }
 
         private static void BuySubscription(ShopperContext context)
         {
-            var orderId = Scenarios.BuySubscription.Run(context, 1).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.BuySubscription.Run(context, 1);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 1, typeof(DigitalProduct));
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 1, typeof(DigitalProduct));
+            }
         }
 
         private static void BuyOneOfEach(ShopperContext context)
         {
-            var orderId = Scenarios.BuyAllDigitals.Run(context, 1).Result;
-            orderId.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var orderId = Scenarios.BuyAllDigitals.Run(context, 1);
+                orderId.Should().NotBeNull();
 
-            RunMinions(context);
+                RunMinions(context);
 
-            var order = ValidateOrder(context, orderId);
-            ValidateEntitlements(context, order, null, 4);
+                var order = ValidateOrder(context, orderId);
+                ValidateEntitlements(context, order, null, 4);
+            }
         }
 
         private static void RunMinions(ShopperContext context)
         {
             Orders.RunPendingOrdersMinion(context);
-            Orders.RunSettleSalesActivitiesMinion(context);
             Orders.RunReleasedOrdersMinion(context);
         }
 
@@ -201,14 +209,32 @@
 
             foreach (var entitlementReference in entitlementsComponent.Entitlements)
             {
-                var entitlement = Proxy.GetValue(context.ShopsContainer().Entitlements.ByKey(entitlementReference.EntityTarget));
+                Entitlement entitlement = null;
+
+                if (entitlementReference.EntityTarget.StartsWith("Entity-GiftCard-"))
+                {
+                    entitlement = Proxy.GetValue(context.ShopsContainer().GiftCards.ByKey(entitlementReference.EntityTarget));
+                }
+                else if (entitlementReference.EntityTarget.StartsWith("Entity-DigitalProduct-"))
+                {
+                    entitlement = Proxy.GetValue(context.ShopsContainer().DigitalProducts.ByKey(entitlementReference.EntityTarget));
+                }
+                else if (entitlementReference.EntityTarget.StartsWith("Entity-Installation-"))
+                {
+                    entitlement = Proxy.GetValue(context.ShopsContainer().Installations.ByKey(entitlementReference.EntityTarget));
+                }
+                else if (entitlementReference.EntityTarget.StartsWith("Entity-Warranty-"))
+                {
+                    entitlement = Proxy.GetValue(context.ShopsContainer().Warranties.ByKey(entitlementReference.EntityTarget));
+                }
+
                 entitlement.Should().NotBeNull();
                 entitlement.Order.Should().NotBeNull();
                 entitlement.Order?.EntityTarget.Should().Be(order.Id);
 
                 if (type != null)
                 {
-                    entitlement.GetType().Equals(type).Should().BeTrue();
+                    (entitlement.GetType() == type).Should().BeTrue();
                 }
 
                 if (customer != null)
@@ -216,8 +242,7 @@
                     entitlement.Customer.Should().NotBeNull();
                     entitlement.Customer?.EntityTarget.Should().Be(customer.Id);
                 }
-                else if (type != null && type.Equals(typeof(GiftCard)) ||
-                         type == null && entitlementReference.EntityTarget.StartsWith("Entity-GiftCard-"))
+                else if (type != null && type == typeof(GiftCard) || type == null && entitlementReference.EntityTarget.StartsWith("Entity-GiftCard-"))
                 {
                     entitlement.Customer.Should().NotBeNull();
                     entitlement.Customer?.EntityTarget.Should().Be("DefaultUser");

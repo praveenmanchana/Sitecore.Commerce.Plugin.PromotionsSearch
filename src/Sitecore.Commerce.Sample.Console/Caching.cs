@@ -1,79 +1,96 @@
 ﻿namespace Sitecore.Commerce.Sample.Console
 {
-    using System;
-    using System.Diagnostics;
-    using System.Linq;
-
     using FluentAssertions;
-
+    using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Sample.Contexts;
     using Sitecore.Commerce.ServiceProxy;
+    using System.Linq;
 
     public static class Caching
     {
-        private static readonly CommerceOps.Sitecore.Commerce.Engine.Container Container = new DevOpAndre().Context.OpsContainer();
+        private static readonly CommerceOps.Sitecore.Commerce.Engine.Container OpsContainer = new DevOpAndre().Context.OpsContainer();
 
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            Console.WriteLine("Begin Caching");
-            
-            GetStoreCaches();
-            GetStoreCache();
-            ClearCacheStoreCache();
-            ClearCacheStore();
-            RequestCacheReset();
-
-            watch.Stop();
-
-            Console.WriteLine($"End Caching:{watch.ElapsedMilliseconds} ms");
+            using (new SampleScenarioScope("Caching"))
+            {
+                GetStoreCaches();
+                GetStoreCache(); // assuming enabled provider is redis
+                GetDataStoreCache(); // assuming enabled provider is redis
+                GetCache();
+                ClearCache();
+                ClearDataStoreCaches();
+                ClearCacheStore();
+            }
         }
 
         private static void ClearCacheStore()
         {
-            Console.WriteLine("Begin ClearCacheStore");
-            
-            var result = Proxy.GetValue(Container.ClearCacheStore("AdventureWorksAuthoring", "AdventureWorksAuthoring"));
-            result.Should().NotBeNull();
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(OpsContainer.ClearCacheStore());
+                result.Should().NotBeNull();
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
-        private static void ClearCacheStoreCache()
+        private static void ClearDataStoreCaches()
         {
-            Console.WriteLine("Begin ClearCacheStoreCache");
-            
-            var result = Proxy.GetValue(Container.ClearCacheStoreCache("AdventureWorksAuthoring", "AdventureWorksAuthoring.Items", "AdventureWorksAuthoring"));
-            result.Should().NotBeNull();
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(OpsContainer.ClearDataStoreCaches());
+                result.Should().NotBeNull();
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
-        private static void RequestCacheReset()
+        private static void ClearCache()
         {
-            Console.WriteLine("Begin RequestCacheReset");
-
-            var result = Proxy.GetValue(Container.RequestCacheReset("AdventureWorksAuthoring", "AdventureWorksAuthoring.Items", null));
-            result.Should().NotBeNull();
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(OpsContainer.ClearCache("Items"));
+                result.Should().NotBeNull();
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
         private static void GetStoreCaches()
         {
-            Console.WriteLine("Begin GetStoreCaches");
-
-            var result = Proxy.Execute(Container.GetCacheStores()).ToList();
-            result.Should().NotBeNull();
-            result.Should().NotBeEmpty();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.Execute(OpsContainer.GetCacheStores()).ToList();
+                result.Should().NotBeNull();
+                result.Should().NotBeEmpty();
+            }
         }
-        
+
         private static void GetStoreCache()
         {
-            Console.WriteLine("Begin GetStoreCache");
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(OpsContainer.GetCacheStore("Commerce-Redis-Store"));
+                result.Should().NotBeNull();
+                result.Caches.Should().NotBeEmpty();
+            }
+        }
 
-            var result = Proxy.GetValue(Container.GetCacheStore("AdventureWorksAuthoring"));
-            result.Should().NotBeNull();
-            result.Caches.Should().NotBeEmpty();
+        private static void GetDataStoreCache()
+        {
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(OpsContainer.GetDataCacheStore("Commerce-Redis-Store"));
+                result.Should().NotBeNull();
+                result.Caches.Should().NotBeEmpty();
+            }
+        }
+
+        private static void GetCache()
+        {
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(OpsContainer.GetCache("Items"));
+                result.Should().NotBeNull();
+            }
         }
     }
 }

@@ -209,11 +209,12 @@ namespace Plugin.Sample.Payments.Braintree
                 ActivityAmount = new Money(payment.Amount.CurrencyCode, 0),
                 Customer = new EntityReference
                 {
-                    EntityTarget = order.Components.OfType<ContactComponent>().FirstOrDefault()?.CustomerId
+                    EntityTarget = order.EntityComponents.OfType<ContactComponent>().FirstOrDefault()?.CustomerId
                 },
                 Order = new EntityReference
                 {
-                    EntityTarget = order.Id
+                    EntityTarget = order.Id,
+                    EntityTargetUniqueId = order.UniqueId
                 },
                 Name = "Void the Federated payment",
                 PaymentStatus = context.GetPolicy<KnownSalesActivityStatusesPolicy>().Void
@@ -231,7 +232,7 @@ namespace Plugin.Sample.Payments.Braintree
             salesActivity.SetComponent(payment);
 
             var salesActivities = order.SalesActivity.ToList();
-            salesActivities.Add(new EntityReference { EntityTarget = salesActivity.Id });
+            salesActivities.Add(new EntityReference { EntityTarget = salesActivity.Id, EntityTargetUniqueId = salesActivity.UniqueId });
             order.SalesActivity = salesActivities;
 
             await this._persistEntityPipeline.Run(new PersistEntityArgument(salesActivity), context).ConfigureAwait(false);

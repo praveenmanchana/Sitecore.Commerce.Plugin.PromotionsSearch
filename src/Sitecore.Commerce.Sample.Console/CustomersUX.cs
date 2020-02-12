@@ -2,9 +2,10 @@
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Linq;
-    using Core;
+
+    using CommerceOps.Sitecore.Commerce.Core;
+
     using EntityViews;
     using Extensions;
     using FluentAssertions;
@@ -19,17 +20,11 @@
         private static string _customerId;
         private static string _customerUserName;
         private static string _addressId;
-
         private static readonly Sitecore.Commerce.Engine.Container ShopsContainer = new ShopperContext().ShopsContainer();
 
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            Console.WriteLine("Begin CustomersUX");
-
-            try
+            using (new SampleScenarioScope("Customers UX"))
             {
                 GenerateRandomUserName();
                 AddCustomer();
@@ -38,16 +33,8 @@
                 AddAddress();
                 EditAddress();
                 RemoveAddress();
-                RemoveCustomer();               
+                RemoveCustomer();
             }
-            catch (Exception ex)
-            {
-                ConsoleExtensions.WriteColoredLine(ConsoleColor.Red, $"Exception in Scenario 'CustomersUX' (${ex.Message}) : Stack={ex.StackTrace}");
-            }
-
-            watch.Stop();
-
-            Console.WriteLine($"End CustomersUX :{watch.ElapsedMilliseconds} ms");
         }
 
         public static string GenerateRandomEmail()
@@ -86,38 +73,36 @@
         }
 
         #region Customer
-
         public static string AddCustomer(string userName = "", ShopperContext context = null)
         {
-            Console.WriteLine("Begin CustomerDetails for Add View");
+            using (new SampleMethodScope())
+            {
+                var container = context != null ? context.ShopsContainer() : ShopsContainer;
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(string.Empty, "Details", "AddCustomer", string.Empty));
+                view.Should().NotBeNull();
+                view.Properties.Should().NotBeEmpty();
 
-            var container = context != null ? context.ShopsContainer() : ShopsContainer;
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(string.Empty, "Details", "AddCustomer", string.Empty));
-            view.Should().NotBeNull();            
-            view.Properties.Should().NotBeEmpty();
+                view.Action.Should().Be("AddCustomer");
+                view.Properties.Should().NotBeEmpty();
+                var customerName = string.IsNullOrEmpty(userName) ? _customerUserName : userName;
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Domain")).Value = customerName.Split('\\')[0];
+                view.Properties.FirstOrDefault(p => p.Name.Equals("LoginName")).Value = customerName.Split('\\')[1];
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Email")).Value = GenerateRandomEmail();
 
-            view.Action.Should().Be("AddCustomer");
-            view.Properties.Should().NotBeEmpty();
-            var customerName = string.IsNullOrEmpty(userName) ? _customerUserName : userName;
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Domain")).Value = customerName.Split('\\')[0];
-            view.Properties.FirstOrDefault(p => p.Name.Equals("LoginName")).Value = customerName.Split('\\')[1];
-            //view.Properties.FirstOrDefault(p => p.Name.Equals("Password")).Value = "Password01";
+                var action = Proxy.DoCommand(container.DoAction(view));
+                action.Messages.Any(m => m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
+                ConsoleExtensions.WriteExpectedError();
 
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Email")).Value = GenerateRandomEmail();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("AccountStatus")).Value = "ActiveAccount";
 
-            var action = Proxy.DoCommand(container.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
-            ConsoleExtensions.WriteColoredLine(ConsoleColor.Yellow, "Expected error");
+                action = Proxy.DoCommand(container.DoAction(view));
+                action.Messages.Should().NotContainErrors();
+                action.Models.OfType<Sitecore.Commerce.Core.PersistedEntityModel>().FirstOrDefault().Should().NotBeNull();
+                _customerId = action.Models.OfType<Sitecore.Commerce.Core.PersistedEntityModel>().FirstOrDefault()?.EntityId;
 
-            view.Properties.FirstOrDefault(p => p.Name.Equals("AccountStatus")).Value = "ActiveAccount";
-
-            action = Proxy.DoCommand(container.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase) || 
-                                     m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            action.Models.OfType<CustomerAdded>().FirstOrDefault().Should().NotBeNull();
-            _customerId = action.Models.OfType<CustomerAdded>().FirstOrDefault()?.CustomerId;
-
-            return _customerId;
+                return _customerId;
+            }
         }
 
         public static Customer GetCustomerByName(ShopperContext context = null)
@@ -144,95 +129,117 @@
 
         private static void EditCustomer()
         {
-            Console.WriteLine("Begin CustomerDetails for Edit View");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_customerId, "Details", "EditCustomer", string.Empty));
+                view.Should().NotBeNull();
+                view.Properties.Should().NotBeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(_customerId, "Details", "EditCustomer", string.Empty));
-            view.Should().NotBeNull();
-            view.Properties.Should().NotBeEmpty();
+                view.Action.Should().Be("EditCustomer");
+                view.Properties.Should().NotBeEmpty();
 
-            view.Action.Should().Be("EditCustomer");
-            view.Properties.Should().NotBeEmpty();
-            
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Language")).Value = "fr-FR";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("FirstName")).Value = "Jane";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("LastName")).Value = "Doe";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("IncludedTags")).Value = "['First Tag', 'Second Tag']";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Language")).Value = "fr-FR";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("FirstName")).Value = "Jane";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("LastName")).Value = "Doe";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("IncludedTags")).Value =
+                    "['First Tag', 'Second Tag']";
 
-            var action = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase) || 
-                                     m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                var action = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                action.Messages.Any(
+                        m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)
+                            || m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeFalse();
 
-            var customer = CustomersUX.GetCustomer(ShopsContainer, _customerId);
-            customer.Should().NotBeNull();
-            customer.UserName.Should().Be(_customerUserName);
-            customer.Tags.Count.Should().Be(2);
-            customer.Components.OfType<CustomerDetailsComponent>().Should().NotBeEmpty();
-            customer.Components.OfType<CustomerDetailsComponent>().FirstOrDefault().View.ChildViews.Should().NotBeEmpty();
-            customer.Components.OfType<CustomerDetailsComponent>().FirstOrDefault().View.ChildViews.FirstOrDefault().Should().BeOfType<EntityView>();
-            var details = customer.Components.OfType<CustomerDetailsComponent>().FirstOrDefault().View.ChildViews.FirstOrDefault() as EntityView;
-            details.Properties.Should().NotBeEmpty();
+                var customer = CustomersUX.GetCustomer(ShopsContainer, _customerId);
+                customer.Should().NotBeNull();
+                customer.UserName.Should().Be(_customerUserName);
+                customer.Tags.Count.Should().Be(2);
+                customer.Components.OfType<CustomerDetailsComponent>().Should().NotBeEmpty();
+                customer.Components.OfType<CustomerDetailsComponent>()
+                    .FirstOrDefault()
+                    .View.ChildViews.Should()
+                    .NotBeEmpty();
+                customer.Components.OfType<CustomerDetailsComponent>()
+                    .FirstOrDefault()
+                    .View.ChildViews.FirstOrDefault()
+                    .Should()
+                    .BeOfType<EntityView>();
+                var details =
+                    customer.Components.OfType<CustomerDetailsComponent>()
+                        .FirstOrDefault()
+                        .View.ChildViews.FirstOrDefault() as EntityView;
+                details.Properties.Should().NotBeEmpty();
+            }
         }
-        
+
         private static void RemoveCustomer()
         {
-            Console.WriteLine("Begin RemoveCustomer");           
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_customerId, "Details", string.Empty, string.Empty));
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(_customerId, "Details", string.Empty, string.Empty));
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+                view.Action = "RemoveCustomer";
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    version
+                };
 
-            view.Action = "RemoveCustomer";
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      version
-                                  };
-
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
-
         #endregion
 
-        #region Address        
-
+        #region Address   
         private static void AddAddress()
         {
-            Console.WriteLine("Begin AddressDetails for Add");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_customerId, "AddressDetails", "SelectAddressCountry", string.Empty));
+                view.Should().NotBeNull();
+                view.Properties.Should().NotBeEmpty();
+                view?.Policies.Should().BeEmpty();
+                view.Action.Should().Be("GetCountryRegionsForCustomers");
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(_customerId, "AddressDetails", "SelectAddressCountry", string.Empty));
-            view.Should().NotBeNull();
-            view.Properties.Should().NotBeEmpty();
-            view?.Policies.Should().BeEmpty();
-            view.Action.Should().Be("GetCountryRegionsForCustomers");
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Country")).Value = "CA";
+                var action = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
 
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Country")).Value = "CA";
-            var action = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();           
+                view = action.Models.OfType<EntityView>().FirstOrDefault(v => v.Name.Equals(view.Name));
+                view.Should().NotBeNull();
+                view?.Policies.Should().BeEmpty();
+                view?.Properties.Should().NotBeEmpty();
+                view?.Action.Should().Be("AddAddress");
+                view.Properties.FirstOrDefault(p => p.Name.Equals("AddressName")).Value = "Home";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("State")).Value = "ON";
 
-            view = action.Models.OfType<EntityView>().FirstOrDefault(v => v.Name.Equals(view.Name));
-            view.Should().NotBeNull();
-            view?.Policies.Should().BeEmpty();
-            view?.Properties.Should().NotBeEmpty();
-            view?.Action.Should().Be("AddAddress");
-            view.Properties.FirstOrDefault(p => p.Name.Equals("AddressName")).Value = "Home";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("State")).Value = "ON";
+                action = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                action.Messages.Any(m => m.Code.EndsWith("error", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeTrue();
+                ConsoleExtensions.WriteExpectedError();
 
-            action = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.EndsWith("error", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
-            ConsoleExtensions.WriteColoredLine(ConsoleColor.Yellow, "Expected error");
-
-            view.Properties.FirstOrDefault(p => p.Name.Equals("FirstName")).Value = "first name";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("LastName")).Value = "last name";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Address1")).Value = "123 street";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Address2")).Value = string.Empty;
-            view.Properties.FirstOrDefault(p => p.Name.Equals("City")).Value = "city";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("ZipPostalCode")).Value = "postalCode";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("PhoneNumber")).Value = "phoneNumber";
-            view.Properties.FirstOrDefault(p => p.Name.Equals("IsPrimary")).Value = "true";
-            action = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.EndsWith("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            action.Models.OfType<CustomerAddressAdded>().FirstOrDefault().Should().NotBeNull();
-            _addressId = action.Models.OfType<CustomerAddressAdded>().FirstOrDefault()?.AddressId;         
+                view.Properties.FirstOrDefault(p => p.Name.Equals("FirstName")).Value = "first name";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("LastName")).Value = "last name";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Address1")).Value = "123 street";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Address2")).Value = string.Empty;
+                view.Properties.FirstOrDefault(p => p.Name.Equals("City")).Value = "city";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("ZipPostalCode")).Value = "postalCode";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("PhoneNumber")).Value = "phoneNumber";
+                view.Properties.FirstOrDefault(p => p.Name.Equals("IsPrimary")).Value = "true";
+                action = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                action.Messages.Any(m => m.Code.EndsWith("error", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeFalse();
+                action.Models.OfType<CustomerAddressAdded>().FirstOrDefault().Should().NotBeNull();
+                _addressId = action.Models.OfType<CustomerAddressAdded>().FirstOrDefault()?.AddressId;
+            }
         }
 
         private static void EditAddress()
@@ -262,22 +269,23 @@
 
         private static void RemoveAddress()
         {
-            Console.WriteLine("Begin RemoveAddress");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_customerId, "Details", string.Empty, _addressId));
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(_customerId, "Details", string.Empty, _addressId));
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+                view.Action = "RemoveAddress";
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    version
+                };
 
-            view.Action = "RemoveAddress";
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      version
-                                  };
-
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
-
         #endregion
     }
 }

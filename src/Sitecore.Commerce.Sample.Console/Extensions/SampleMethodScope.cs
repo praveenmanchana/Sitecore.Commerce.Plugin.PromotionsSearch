@@ -25,17 +25,19 @@
             this._methodName = sf.GetMethod().Name;
             this._watch.Start();
 
-            Console.WriteLine($"{new string('>', (TabCount++) * 2)} [Begin Method] {this._methodName}");
+            ConsoleExtensions.WriteColoredLine(ConsoleColor.DarkGray, $"{new string('>', (TabCount++) * 2)} [Begin Method] {this._methodName}");
         }
 
         public void Dispose()
         {
-            if (!this._disposed)
+            if (this._disposed)
             {
-                this._watch.Stop();
-                Console.WriteLine($"{new string('<', (--TabCount) * 2)} [End Method] {this._methodName} : {this._watch.Elapsed}");
-                this._disposed = true;
+                return;
             }
+
+            this._watch.Stop();
+            ConsoleExtensions.WriteColoredLine(ConsoleColor.DarkGray, $"{new string('<', (--TabCount) * 2)} [End Method] {this._methodName} : {this._watch.Elapsed}");
+            this._disposed = true;
         }
     }
 }

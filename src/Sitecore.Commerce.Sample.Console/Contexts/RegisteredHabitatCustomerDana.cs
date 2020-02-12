@@ -16,7 +16,7 @@
             {
                 Shop = Sample.Console.Program.DefaultStorefront,
                 ShopperId = "HabitatShopperDanaId",
-                Environment = "HabitatShops",
+                Environment = EnvironmentConstants.HabitatShops,
                 Language = "en-US",
                 Currency = "USD",
                 PolicyKeys = "ZeroMinionDelay|xActivityPerf",
@@ -80,11 +80,11 @@
 
         public void GoShopping()
         {
-            BuyPhone.Run(this.Context).Wait();
-            BuyFridgeAndWarranty.Run(this.Context).Wait();
-            BuyAllDigitals.Run(this.Context, 1).Wait();
-            BuyGameSystemAndSubscription.Run(this.Context).Wait();
-            BuyCameraAndGiftWrap.Run(this.Context).Wait();
+            BuyPhone.Run(this.Context);
+            BuyFridgeAndWarranty.Run(this.Context);
+            BuyAllDigitals.Run(this.Context, 1);
+            BuyGameSystemAndSubscription.Run(this.Context);
+            BuyCameraAndGiftWrap.Run(this.Context);
         }
     }
 }

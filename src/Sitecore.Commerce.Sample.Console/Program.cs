@@ -10,20 +10,19 @@
         // Should the environment be bootstrapped when this program runs?
         private static readonly bool ShouldBootstrapOnLoad = true;
         private static readonly bool ShouldDevOpsScenarios = true;
+        private static readonly bool ShouldRunCatalogScenarios = true;
         private static readonly bool ShouldRunPricingScenarios = true;
         private static readonly bool ShouldRunPromotionsScenarios = true;
-        private static readonly bool ShouldRunCatalogScenarios = true;
         private static readonly bool ShouldRunInventoryScenarios = true;
         private static readonly bool ShouldRunOrdersScenarios = true;
         private static readonly bool ShouldRunCustomersScenarios = true;
         private static readonly bool ShouldRunEntitlementsScenarios = true;
-        private static readonly bool ShouldRunSearchScenarios = false;
+        private static readonly bool ShouldRunSearchScenarios = true;
         private static readonly bool ShouldRunBusinessUsersScenarios = true;
         private static readonly bool ShouldRunVersionScenarios = true;
         
         private static readonly bool DemoStops = true;
         
-        public static string CurrentEnvironment = "AdventureWorksShops";
         public static string DefaultStorefront = "CommerceEngineDefaultStorefront";
 
         public static string OpsServiceUri = "https://localhost:5000/CommerceOps/";
@@ -85,10 +84,8 @@
 
                     Categories.RunScenarios();
                     CategoriesUX.RunScenarios();
-
-                    // TODO: contains failing tests
+                    
                     SellableItems.RunScenarios();
-
                     SellableItemsUX.RunScenarios();
                 }
 
@@ -118,10 +115,9 @@
 
                 if (ShouldRunOrdersScenarios)
                 {
-                    Fulfillments.RunScenarios();
+                    Fulfillment.RunScenarios();
 
                     Payments.RunScenarios();
-                    PaymentsFederated.RunScenarios();
 
                     Carts.RunScenarios();
 
@@ -151,7 +147,7 @@
                 if (ShouldRunBusinessUsersScenarios)
                 {
                     ComposerUX.RunScenarios();
-                    // Composer.RunScenarios();
+                    Composer.RunScenarios();
                 }
 
                 if (ShouldRunVersionScenarios)
@@ -172,6 +168,7 @@
             {
                 ConsoleExtensions.WriteErrorLine("An unexpected exception occurred.");
                 ConsoleExtensions.WriteErrorLine(ex.ToString());
+                Console.ReadKey();
             }
 
             Console.WriteLine("done.");

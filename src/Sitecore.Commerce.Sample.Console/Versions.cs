@@ -7,6 +7,8 @@
     using EntityViews;
     using FluentAssertions;
     using Microsoft.OData.Client;
+
+    using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Sample.Contexts;
     using Sitecore.Commerce.ServiceProxy;
 
@@ -17,52 +19,45 @@
 
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            Console.WriteLine("Begin Versions");
-
-            AddCatalogVersion();
-
-            watch.Stop();
-
-            Console.WriteLine($"End Versions:{watch.ElapsedMilliseconds} ms");
+            using (new SampleScenarioScope("Versions"))
+            {
+                AddCatalogVersion();
+            }
         }
 
         private static void AddCatalogVersion()
         {
-            Console.WriteLine("Begin AddCatalogVersion");
-
-            var catalogName = Guid.NewGuid().ToString("N");
-            var entityId = $"Entity-Catalog-{catalogName}";
-
-            // Create catalog
-            var addCatalogView = Proxy.GetValue(AuthoringContainer.GetEntityView(string.Empty, "Details", "AddCatalog", string.Empty));
-            addCatalogView.Properties = new ObservableCollection<ViewProperty>
+            using (new SampleMethodScope())
             {
-                new ViewProperty {Name = "Name", Value = catalogName},
-                new ViewProperty {Name = "DisplayName", Value = catalogName}
-            };
+                var catalogName = Guid.NewGuid().ToString("N");
+                var entityId = $"Entity-Catalog-{catalogName}";
 
-            var addCatalogResult = Proxy.DoCommand(AuthoringContainer.DoAction(addCatalogView));
+                // Create catalog
+                var addCatalogView = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(string.Empty, "Details", "AddCatalog", string.Empty));
+                addCatalogView.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "Name", Value = catalogName },
+                    new ViewProperty { Name = "DisplayName", Value = catalogName }
+                };
+                var addCatalogResult = Proxy.DoCommand(AuthoringContainer.DoAction(addCatalogView));
+                addCatalogResult.Messages.Should().NotContainErrors();
 
-            addCatalogResult.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                // Create new version
+                var addVersionView = Proxy.GetValue(AuthoringContainer.GetEntityView(entityId, string.Empty, "AddEntityVersion", string.Empty));
+                var addVersionResult = Proxy.DoCommand(AuthoringContainer.DoAction(addVersionView));
+                addVersionResult.Messages.Should().NotContainErrors();
 
-            // Create new version
-            var addVersionView = Proxy.GetValue(AuthoringContainer.GetEntityView(entityId, string.Empty, "AddEntityVersion", string.Empty));
-            var addVersionResult = Proxy.DoCommand(AuthoringContainer.DoAction(addVersionView));
+                // Change merge option to retrieve all entities.
+                AuthoringContainer.MergeOption = MergeOption.NoTracking;
 
-            addVersionResult.ResponseCode.Should().Be("Ok");
-
-            // Change merge option to retrieve all entities.
-            AuthoringContainer.MergeOption = MergeOption.NoTracking;
-
-            var versions = AuthoringContainer.FindEntityVersions("Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog", entityId).Execute().ToList();
-
-            for (int i = 1; i < versions.Count + 1; i++)
-            {
-                var version = versions[versions.Count - i];
-                version.EntityVersion.Should().Be(i);
+                var versions = AuthoringContainer.FindEntityVersions(
+                        "Sitecore.Commerce.Plugin.Catalog.Catalog, Sitecore.Commerce.Plugin.Catalog",
+                        entityId)
+                    .Execute()
+                    .ToList();
+                versions.Count.Should().Be(2);
+                versions.ForEach(v => v.EntityVersion.Should().BeOneOf(1, 2));
             }
         }
     }

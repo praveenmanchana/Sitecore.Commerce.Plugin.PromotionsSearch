@@ -1,39 +1,41 @@
 ﻿namespace Sitecore.Commerce.Sample.Console
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
 
-    using FluentAssertions;
-
-    using Sitecore.Commerce.Core;
     using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Plugin.Catalog;
-    using Sitecore.Commerce.Sample.Contexts;
-    using Sitecore.Commerce.ServiceProxy;
+
     using System.Reflection;
-    using System.Collections.ObjectModel;
-    using Sitecore.Commerce.EntityViews;
 
     public static class SellableItemsUX
     {
         internal const string CatalogName = "Adventure Works Catalog";
-        internal const string CategoryName = "SellableItemUXCategory";
-        internal const string Product1Name = "ConsoleProduct1";
-        internal const string Product2Name = "ConsoleProduct2";
-        internal const string Variant1Name = "ConsoleVariant1";
+        internal static string _categoryName;
+        internal static string _product1Name;
+        internal static string _product2Name;
+        internal static string _variant1Name;
         internal const string ImageId = "f6ba4fec-07e7-4c69-858e-6acd5eba4c1b";
         internal static readonly string CatalogId = CatalogName.ToEntityId<Catalog>();
-        internal static readonly string CategoryId = CategoryName.ToEntityId<Category>(CatalogName);
-        internal static readonly string Product1Id = Product1Name.ToEntityId<SellableItem>();
-        internal static readonly string Product2Id = Product2Name.ToEntityId<SellableItem>();
+        internal static string _categoryId;
+        internal static string _product1Id;
+        internal static string _product2Id;
 
         public static void RunScenarios()
         {
             using (new SampleScenarioScope(MethodBase.GetCurrentMethod().DeclaringType.Name))
             {
-                EngineExtensions.AddCategory(CategoryId, CatalogId, CatalogName);
+                var partial = $"{Guid.NewGuid():N}".Substring(0, 3);
+
+                _categoryName = $"SellableItemUXCategory{partial}";
+                _product1Name = $"ConsoleProduct1{partial}";
+                _product2Name = $"ConsoleProduct2{partial}";
+                _variant1Name = $"ConsoleVariant1{partial}";
+
+                _categoryId = _categoryName.ToEntityId<Category>(CatalogName);
+                _product1Id = _product1Name.ToEntityId<SellableItem>();
+                _product2Id = _product2Name.ToEntityId<SellableItem>();
+                
+                EngineExtensions.AddCategory(_categoryId, CatalogId, CatalogName);
                 AddSellableItemToCatalog();
                 AddSellableItemToCategory();
                 AddSellableItemVariant();
@@ -46,9 +48,9 @@
                 DissassociateSellableItemFromCategory();
                 AddSellableItemImage();
                 RemoveSellableItemImage();
-                EngineExtensions.DeleteSellableItem(Product1Id, CategoryId, CategoryName, CatalogName);
-                EngineExtensions.DeleteSellableItem(Product2Id, CategoryId, CategoryName, CatalogName);
-                EngineExtensions.DeleteCategory(CategoryId);
+                EngineExtensions.DeleteSellableItem(_product1Id, _categoryId, _categoryName, CatalogName);
+                EngineExtensions.DeleteSellableItem(_product2Id, _categoryId, _categoryName, CatalogName);
+                EngineExtensions.DeleteCategory(_categoryId);
             }
         }
 
@@ -56,7 +58,7 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.RemoveSellableItemImage(Product1Id, CatalogName, ImageId);
+                EngineExtensions.RemoveSellableItemImage(_product1Id, CatalogName, ImageId);
             }
         }
 
@@ -64,7 +66,7 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.AddSellableItemImage(Product1Id, CatalogName, ImageId);
+                EngineExtensions.AddSellableItemImage(_product1Id, CatalogName, ImageId);
             }
         }
 
@@ -73,8 +75,8 @@
             using (new SampleMethodScope())
             {
                 // Remove Product1 from the category
-                EngineExtensions.AssertChildViewItemExists(CategoryId, ChildViewNames.SellableItems, Product1Id);
-                EngineExtensions.DisassociateItem(Product1Id, Product1Name, CategoryId, CategoryName);
+                EngineExtensions.AssertChildViewItemExists(_categoryId, ChildViewNames.SellableItems, _product1Id);
+                EngineExtensions.DisassociateItem(_product1Id, _product1Name, _categoryId, _categoryName);
             }
         }
 
@@ -83,8 +85,8 @@
             using (new SampleMethodScope())
             {
                 // Remove Product2 from the catalog root
-                EngineExtensions.AssertChildViewItemExists(CatalogId, ChildViewNames.SellableItems, Product2Id);
-                EngineExtensions.DisassociateItem(Product2Id, Product2Name, CatalogId, CatalogName);
+                EngineExtensions.AssertChildViewItemExists(CatalogId, ChildViewNames.SellableItems, _product2Id);
+                EngineExtensions.DisassociateItem(_product2Id, _product2Name, CatalogId, CatalogName);
             }
         }
 
@@ -93,11 +95,11 @@
             using (new SampleMethodScope())
             {
                 // Product1 should be a child of the catalog, but not the category.
-                EngineExtensions.AssertChildViewItemExists(CatalogId, ChildViewNames.SellableItems, Product1Id);
-                EngineExtensions.AssertChildViewItemNotExists(CategoryId, ChildViewNames.SellableItems, Product1Id);
+                EngineExtensions.AssertChildViewItemExists(CatalogId, ChildViewNames.SellableItems, _product1Id);
+                EngineExtensions.AssertChildViewItemNotExists(_categoryId, ChildViewNames.SellableItems, _product1Id);
 
                 // Add Product1 to the category
-                EngineExtensions.AssociateSellableItem(Product1Id, CategoryId, CategoryName, CatalogName);
+                EngineExtensions.AssociateSellableItem(_product1Id, _categoryId, _categoryName, CatalogName);
             }
         }
 
@@ -106,11 +108,11 @@
             using (new SampleMethodScope())
             {
                 // Product2 should be a child of the category, but not the catalog.
-                EngineExtensions.AssertChildViewItemExists(CategoryId, ChildViewNames.SellableItems, Product2Id);
-                EngineExtensions.AssertChildViewItemNotExists(CatalogId, ChildViewNames.SellableItems, Product2Id);
+                EngineExtensions.AssertChildViewItemExists(_categoryId, ChildViewNames.SellableItems, _product2Id);
+                EngineExtensions.AssertChildViewItemNotExists(CatalogId, ChildViewNames.SellableItems, _product2Id);
 
                 // Add Product2 to the catalog root
-                EngineExtensions.AssociateSellableItem(Product2Id, CatalogId, CatalogName, CatalogName);
+                EngineExtensions.AssociateSellableItem(_product2Id, CatalogId, CatalogName, CatalogName);
             }
         }
 
@@ -118,7 +120,7 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.DeleteSellableItemVariant(Variant1Name, Product1Name, CatalogName, CatalogName);
+                EngineExtensions.DeleteSellableItemVariant(_variant1Name, _product1Name, CatalogName, CatalogName);
             }
         }
 
@@ -126,7 +128,7 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.DisableSellableItemVariant(Variant1Name, Product1Name, CatalogName, CatalogName);
+                EngineExtensions.DisableSellableItemVariant(_variant1Name, _product1Name, CatalogName, CatalogName);
             }
         }
 
@@ -134,7 +136,7 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.EnableSellableItemVariant(Variant1Name, Product1Name, CatalogName, CatalogName);
+                EngineExtensions.EnableSellableItemVariant(_variant1Name, _product1Name, CatalogName, CatalogName);
             }
         }
 
@@ -142,7 +144,7 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.AddSellableItemVariant(Variant1Name, Product1Name, CatalogName, CatalogName);
+                EngineExtensions.AddSellableItemVariant(_variant1Name, _product1Name, CatalogName, CatalogName);
             }
         }
 
@@ -152,7 +154,7 @@
             {
                 // Add Product1 to the catalog root.
                 EngineExtensions.AssertCatalogExists(CatalogId);
-                EngineExtensions.AddSellableItem(Product1Id, CatalogId, CatalogName, CatalogName);
+                EngineExtensions.AddSellableItem(_product1Id, CatalogId, CatalogName, CatalogName);
             }
         }
 
@@ -161,8 +163,8 @@
             using (new SampleMethodScope())
             {
                 // Add Product2 to the category.
-                EngineExtensions.AssertCategoryExists(CategoryId);
-                EngineExtensions.AddSellableItem(Product2Id, CategoryId, CategoryName, CatalogName);
+                EngineExtensions.AssertCategoryExists(_categoryId);
+                EngineExtensions.AddSellableItem(_product2Id, _categoryId, _categoryName, CatalogName);
             }
         }
     }

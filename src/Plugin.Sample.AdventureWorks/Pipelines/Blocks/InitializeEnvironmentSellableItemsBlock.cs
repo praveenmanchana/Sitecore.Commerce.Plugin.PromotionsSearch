@@ -1933,7 +1933,7 @@ namespace Plugin.Sample.AdventureWorks
 
             if (string.IsNullOrEmpty(item.SitecoreId))
             {
-                item.SitecoreId = GuidUtils.GetDeterministicGuidString(item.Id);
+                item.SitecoreId = GuidUtility.GetDeterministicGuidString(item.Id);
             }
 
             var entity = await _findEntityPipeline.Run(new FindEntityArgument(typeof(SellableItem), item.Id), context).ConfigureAwait(false);
@@ -1953,7 +1953,7 @@ namespace Plugin.Sample.AdventureWorks
             // Try to merge the items.
             existingSellableItem.Name = item.Name;
 
-            foreach (var policy in item.Policies)
+            foreach (var policy in item.EntityPolicies)
             {
                 if (existingSellableItem.HasPolicy(policy.GetType()))
                 {
