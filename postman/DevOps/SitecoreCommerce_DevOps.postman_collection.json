@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4873f3b0-61d9-4756-8868-999538dac9d8",
+		"_postman_id": "28dc1a73-92a9-48c2-9606-5be09bed19fc",
 		"name": "SitecoreCommerce_DevOps",
 		"description": "Example calls for direct http requests to support DevOps functionlity\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -273,6 +273,43 @@
 							"path": [
 								"{{OpsApi}}",
 								"Environments('{{Environment}}')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Environment  By UniqueID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{OpsApiHost}}/{{OpsApi}}/Environments('B847E3BA-EA32-62DC-B1C0-3225CA524AA5')?$expand=Components",
+							"host": [
+								"{{OpsApiHost}}"
+							],
+							"path": [
+								"{{OpsApi}}",
+								"Environments('B847E3BA-EA32-62DC-B1C0-3225CA524AA5')"
 							],
 							"query": [
 								{
@@ -591,13 +628,85 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ServiceHost}}/{{OpsApi}}/GetCacheStore(name='{{Environment}}')",
+							"raw": "{{ServiceHost}}/{{OpsApi}}/GetCacheStore(name='Commerce-Redis-Store')",
 							"host": [
 								"{{ServiceHost}}"
 							],
 							"path": [
 								"{{OpsApi}}",
-								"GetCacheStore(name='{{Environment}}')"
+								"GetCacheStore(name='Commerce-Redis-Store')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get data cache store",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{OpsApi}}/GetDataCacheStore(name='Commerce-Redis-Store')",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{OpsApi}}",
+								"GetDataCacheStore(name='Commerce-Redis-Store')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cache",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{OpsApi}}/GetCache(name='Items')",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{OpsApi}}",
+								"GetCache(name='Items')"
 							]
 						}
 					},
@@ -619,7 +728,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"cacheStoreName\": \"{{Environment}}\",\n  \"environmentName\": \"{{Environment}}\"\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ServiceHost}}/{{OpsApi}}/ClearCacheStore()",
@@ -635,7 +744,7 @@
 					"response": []
 				},
 				{
-					"name": "Clear cache store cache",
+					"name": "Clear data store caches",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -646,29 +755,34 @@
 							{
 								"key": "Authorization",
 								"value": "{{SitecoreIdToken}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"cacheStoreName\": \"{{Environment}}\",\n  \"cacheName\": \"{{Environment}}.Items\",\n  \"environmentName\": \"{{Environment}}\"\n}\n"
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{ServiceHost}}/{{OpsApi}}/ClearCacheStoreCache()",
+							"raw": "{{ServiceHost}}/{{OpsApi}}/ClearDataStoreCaches()",
 							"host": [
 								"{{ServiceHost}}"
 							],
 							"path": [
 								"{{OpsApi}}",
-								"ClearCacheStoreCache()"
+								"ClearDataStoreCaches()"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Request cache reset",
+					"name": "Clear cache",
 					"request": {
-						"method": "PUT",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -677,82 +791,25 @@
 							{
 								"key": "Authorization",
 								"value": "{{SitecoreIdToken}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n   \"environmentName\": \"{{ShopsEnvironment}}\"\r\n}"
-						},
-						"url": {
-							"raw": "{{ServiceHost}}/{{OpsApi}}/RequestCacheReset()",
-							"host": [
-								"{{ServiceHost}}"
-							],
-							"path": [
-								"{{OpsApi}}",
-								"RequestCacheReset()"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request cache store reset",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
 							},
 							{
-								"key": "Authorization",
-								"value": "{{SitecoreIdToken}}"
+								"key": "Environment",
+								"type": "text",
+								"value": "{{Environment}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"environmentName\": \"{{ShopsEnvironment}}\",\r\n  \"cacheStoreName\": \"{{ShopsEnvironment}}\"\r\n}"
+							"raw": "{\n\t\"cacheName\": \"Items\"\n}"
 						},
 						"url": {
-							"raw": "{{ServiceHost}}/{{OpsApi}}/RequestCacheReset()",
+							"raw": "{{ServiceHost}}/{{OpsApi}}/ClearCache()",
 							"host": [
 								"{{ServiceHost}}"
 							],
 							"path": [
 								"{{OpsApi}}",
-								"RequestCacheReset()"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request specific cache reset",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{SitecoreIdToken}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"cacheStoreName\": \"{{Environment}}\",\n  \"cacheName\": \"{{Environment}}.Items\",\n  \"environmentName\": \"{{Environment}}\"\n}\n"
-						},
-						"url": {
-							"raw": "{{ServiceHost}}/{{OpsApi}}/RequestCacheReset()",
-							"host": [
-								"{{ServiceHost}}"
-							],
-							"path": [
-								"{{OpsApi}}",
-								"RequestCacheReset()"
+								"ClearCache()"
 							]
 						}
 					},
@@ -1466,6 +1523,42 @@
 					"path": [
 						"{{OpsApi}}",
 						"GetPipelines()"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Deterministic Unique ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{SitecoreIdToken}}"
+					},
+					{
+						"key": "Environment",
+						"value": "{{Environment}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{ServiceHost}}/{{OpsApi}}/GetDeterministicEntityUniqueId(entityId='Entity-Catalog-Adventure Works Catalog', entityVersion=1)",
+					"host": [
+						"{{ServiceHost}}"
+					],
+					"path": [
+						"{{OpsApi}}",
+						"GetDeterministicEntityUniqueId(entityId='Entity-Catalog-Adventure Works Catalog', entityVersion=1)"
 					]
 				}
 			},

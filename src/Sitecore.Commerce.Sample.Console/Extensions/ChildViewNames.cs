@@ -1,7 +1,5 @@
 ﻿namespace Sitecore.Commerce.Extensions
 {
-    using System;
-
     public static class ChildViewNames
     {
         public const string SellableItems = "SellableItems";

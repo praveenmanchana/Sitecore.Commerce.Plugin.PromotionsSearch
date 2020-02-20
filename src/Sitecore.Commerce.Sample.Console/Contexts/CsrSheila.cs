@@ -15,7 +15,7 @@
             {
                 Shop = Sample.Console.Program.DefaultStorefront,
                 ShopperId = "DevOpsId",
-                Environment = "AdventureWorksAuthoring",
+                Environment = EnvironmentConstants.AdventureWorksAuthoring,
                 Language = "en-US",
                 Currency = "USD",
                 PolicyKeys = "ZeroMinionDelay|xActivityPerf",

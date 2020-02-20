@@ -30,19 +30,21 @@ namespace Plugin.Sample.AdventureWorks
             var assembly = Assembly.GetExecutingAssembly();
             services.RegisterAllPipelineBlocks(assembly);
 
-            services.Sitecore().Pipelines(config => config
-             .ConfigurePipeline<IInitializeEnvironmentPipeline>(d =>
-                {
-                    d.Add<InitializeCatalogBlock>()
-                        .Add<InitializeInventoryBlock>()
-                        .Add<InitializeEnvironmentSellableItemsBlock>()
-                        .Add<InitializeEnvironmentRegionsBlock>()
-                        .Add<InitializeEnvironmentShopsBlock>()
-                        .Add<InitializeEnvironmentPricingBlock>()
-                        .Add<InitializeEnvironmentPromotionsBlock>()
-                        .Add<InitializeEnvironmentGiftCardsBlock>();
-                })
-             .ConfigurePipeline<IRunningPluginsPipeline>(c => { c.Add<RegisteredPluginBlock>().After<RunningPluginsBlock>(); }));
+            services.Sitecore().Pipelines(
+                config => config
+                    .ConfigurePipeline<IInitializeEnvironmentPipeline>(
+                        d =>
+                        {
+                            d.Add<InitializeCatalogBlock>()
+                                .Add<InitializeInventoryBlock>()
+                                .Add<InitializeEnvironmentSellableItemsBlock>()
+                                .Add<InitializeEnvironmentRegionsBlock>()
+                                .Add<InitializeEnvironmentShopsBlock>()
+                                .Add<InitializeEnvironmentPricingBlock>()
+                                .Add<InitializeEnvironmentPromotionsBlock>()
+                                .Add<InitializeEnvironmentGiftCardsBlock>();
+                        })
+                    .ConfigurePipeline<IRunningPluginsPipeline>(c => { c.Add<RegisteredPluginBlock>().After<RunningPluginsBlock>(); }));
         }
     }
 }

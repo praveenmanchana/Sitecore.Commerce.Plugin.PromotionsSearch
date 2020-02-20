@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CreateFederatedPaymentBlock.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2016 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
 
 namespace Plugin.Sample.Payments.Braintree
 {
@@ -81,7 +77,7 @@ namespace Plugin.Sample.Payments.Braintree
                     }
                 };
 
-                var result = gateway.Transaction.Sale(request);
+                var result = await gateway.Transaction.SaleAsync(request).ConfigureAwait(false);
                 if (result.IsSuccess())
                 {
                     var transaction = result.Target;

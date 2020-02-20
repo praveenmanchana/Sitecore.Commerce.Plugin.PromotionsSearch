@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "56075057-15ea-4e6e-a433-e3aa071986b6",
+		"_postman_id": "49fabff4-16b9-4802-a511-5871e813838a",
 		"name": "OrdersAPISamples",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -366,8 +366,7 @@
 									"    return model[type] === '#Sitecore.Commerce.Plugin.Returns.RmaAdded';",
 									"}",
 									"",
-									"postman.setGlobalVariable(\"RmaId\", \"Entity-ReturnMerchandiseAuthorization-\" + jsonData.Models.find(findRmaId).RmaId);",
-									"postman.setGlobalVariable(\"RmaFriendlyId\", jsonData.Models.find(findRmaId).RmaId);"
+									"postman.setGlobalVariable(\"RmaId\", jsonData.Models.find(findRmaId).RmaId);"
 								],
 								"type": "text/javascript"
 							}
@@ -477,13 +476,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ServiceHost}}/{{ShopsApi}}/ReturnMerchandiseAuthorizations('{{RmaFriendlyId}}')?$expand=Lines($expand=ChildComponents),Components",
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/ReturnMerchandiseAuthorizations('{{RmaId}}')?$expand=Lines($expand=ChildComponents),Components",
 							"host": [
 								"{{ServiceHost}}"
 							],
 							"path": [
 								"{{ShopsApi}}",
-								"ReturnMerchandiseAuthorizations('{{RmaFriendlyId}}')"
+								"ReturnMerchandiseAuthorizations('{{RmaId}}')"
 							],
 							"query": [
 								{

@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InitializeEnvironmentRegionsBlock.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2016 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
 
 namespace Plugin.Sample.AdventureWorks
 {
@@ -21,17 +17,17 @@ namespace Plugin.Sample.AdventureWorks
     [PipelineDisplayName(AwConstants.InitializeEnvironmentRegionsBlock)]
     public class InitializeEnvironmentRegionsBlock : PipelineBlock<string, string, CommercePipelineExecutionContext>
     {
-        private readonly IPersistEntityPipeline _persistEntityPipeline;
+        private readonly IAddEntitiesPipeline _addEntitiesPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InitializeEnvironmentRegionsBlock"/> class.
         /// </summary>
-        /// <param name="persistEntityPipeline">
-        /// The find entity pipeline.
+        /// <param name="addEntitiesPipeline">
+        /// The add entities pipeline.
         /// </param>
-        public InitializeEnvironmentRegionsBlock(IPersistEntityPipeline persistEntityPipeline)
+        public InitializeEnvironmentRegionsBlock(IAddEntitiesPipeline addEntitiesPipeline)
         {
-            this._persistEntityPipeline = persistEntityPipeline;
+            this._addEntitiesPipeline = addEntitiesPipeline;
         }
 
         /// <summary>
@@ -58,8 +54,8 @@ namespace Plugin.Sample.AdventureWorks
             }
 
             context.Logger.LogInformation($"{this.Name}.InitializingArtifactSet: ArtifactSet={artifactSet}");
-
-            await this._persistEntityPipeline.Run(
+            var persistEntitiesArgument = new List<PersistEntityArgument>
+            {
                 new PersistEntityArgument(
                     new Country(new List<Component>
                     {
@@ -71,10 +67,8 @@ namespace Plugin.Sample.AdventureWorks
                         IsoCode2 = "US",
                         IsoCode3 = "USA",
                         AddressFormat = "1"
-                    }), 
-                context).ConfigureAwait(false); ;
+                    }),
 
-            await this._persistEntityPipeline.Run(
                 new PersistEntityArgument(
                     new Country(new List<Component>
                     {
@@ -86,10 +80,8 @@ namespace Plugin.Sample.AdventureWorks
                         IsoCode2 = "CA",
                         IsoCode3 = "CAN",
                         AddressFormat = "1"
-                    }), 
-                context).ConfigureAwait(false);
+                    }),
 
-            await this._persistEntityPipeline.Run(
                 new PersistEntityArgument(
                     new Country(new List<Component>
                     {
@@ -101,9 +93,10 @@ namespace Plugin.Sample.AdventureWorks
                         IsoCode2 = "DK",
                         IsoCode3 = "DNK",
                         AddressFormat = "1"
-                    }),
-                context).ConfigureAwait(false);
+                    })
+            };
 
+            await this._addEntitiesPipeline.Run(new PersistEntitiesArgument(persistEntitiesArgument), context).ConfigureAwait(false);
             return arg;
         }
     }

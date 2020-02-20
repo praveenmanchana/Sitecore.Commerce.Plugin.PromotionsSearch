@@ -1,12 +1,11 @@
 ﻿namespace Sitecore.Commerce.Sample.Console
 {
-    using System;
-    using System.Diagnostics;
     using System.Linq;
 
     using FluentAssertions;
 
     using Sitecore.Commerce.Core;
+    using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Plugin.Availability;
     using Sitecore.Commerce.Sample.Contexts;
     using Sitecore.Commerce.ServiceProxy;
@@ -17,50 +16,56 @@
 
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            Console.WriteLine("Begin Policies");
-
-            AddUpdatePolicySet();
-            RemovePolicy();
-            GetPolicySet();
-                        
-            watch.Stop();
-
-            Console.WriteLine($"End Policies :{watch.ElapsedMilliseconds} ms");
+            using (new SampleScenarioScope("Policies"))
+            {
+                var policySet = GetPolicySet("Entity-PolicySet-GlobalCartPolicies");
+                AddUpdatePolicySet(policySet);
+                RemovePolicy(policySet);
+            }
         }
 
-        private static void AddUpdatePolicySet()
+        private static void RemovePolicy(PolicySet policySet)
         {
-            var result = Proxy.DoCommand(
-                ShopsContainer.AddPolicy(
-                    "Entity-PolicySet-GlobalCartPolicies",
-                    "Sitecore.Commerce.Plugin.Availability.AvailabilityAlwaysPolicy, Sitecore.Commerce.Plugin.Availability",
-                    new AvailabilityAlwaysPolicy
-                    {
-                        PolicyId = "AvailabilityAlways"
-                    }));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Models.OfType<PolicyAddedModel>().Any().Should().BeTrue();
+            using (new SampleMethodScope())
+            {
+                policySet.Should().NotBeNull();
+                var result =
+                    Proxy.DoCommand(
+                        ShopsContainer.RemovePolicy(
+                            "Entity-PolicySet-GlobalCartPolicies",
+                            "Sitecore.Commerce.Plugin.Availability.AvailabilityAlwaysPolicy, Sitecore.Commerce.Plugin.Availability",
+                            string.Empty));
+                result.Messages.Should().NotContainMessageCode("error");
+            }
         }
 
-        private static void RemovePolicy()
+        private static void AddUpdatePolicySet(PolicySet policySet)
         {
-            var result =
-                Proxy.DoCommand(
-                    ShopsContainer.RemovePolicy(
-                        "Entity-PolicySet-GlobalCartPolicies",
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.DoCommand(
+                    ShopsContainer.AddPolicy(
+                        policySet.Id,
                         "Sitecore.Commerce.Plugin.Availability.AvailabilityAlwaysPolicy, Sitecore.Commerce.Plugin.Availability",
-                        string.Empty));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                        new AvailabilityAlwaysPolicy
+                        {
+                            PolicyId = "AvailabilityAlways"
+                        }));
+                result.Messages.Should().NotContainErrors();
+                result.Models.OfType<PolicyAddedModel>().Any().Should().BeTrue();
+            }
         }
 
-        private static void GetPolicySet()
+        private static PolicySet GetPolicySet(string id)
         {
-            var result = ShopsContainer.PolicySets.ByKey("DoesNotExist").GetValue();
+            using (new SampleMethodScope())
+            {
+                var result = ShopsContainer.PolicySets.ByKey(id).GetValue();
 
-            result.Should().NotBeNull();
+                result.Should().NotBeNull();
+
+                return result;
+            }
         }
     }
 }

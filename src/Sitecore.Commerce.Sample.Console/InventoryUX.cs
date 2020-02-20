@@ -2,12 +2,10 @@
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Linq;
     using FluentAssertions;
-    using Sitecore.Commerce.Engine;
+
     using Sitecore.Commerce.EntityViews;
-    using Sitecore.Commerce.Sample.Contexts;
     using Sitecore.Commerce.ServiceProxy;
     using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Plugin.Inventory;
@@ -17,32 +15,48 @@
 
     public static class InventoryUX
     {
-        private const string Catalog1Name = "InventoryUXCatalog1";
-        private const string Catalog2Name = "InventoryUXCatalog2";
-        private const string InventorySet1Name = "InventoryUXInventorySet1";
-        private const string InventorySet2Name = "InventoryUXInventorySet2";
-        private const string ProductName = "InventoryUXProduct";
+        private static string _catalog1Name;
+        private static string _catalog2Name;
+        private static string _inventorySet1Name;
+        private static string _inventorySet2Name;
+        private static string _productName;
         private const int InitialQuantity = 100;
         private const int UpdatedQuantity = 200;
         private const int BackorderLimit = 50;
-        private static readonly string Catalog1Id = Catalog1Name.ToEntityId<Catalog>();
-        private static readonly string Catalog2Id = Catalog2Name.ToEntityId<Catalog>();
-        private static readonly string InventorySet1Id = InventorySet1Name.ToEntityId<InventorySet>();
-        private static readonly string InventorySet2Id = InventorySet2Name.ToEntityId<InventorySet>();
-        private static readonly string ProductId = ProductName.ToEntityId<SellableItem>();
-        private static readonly string ProductInventoryInfo1Id = ProductName.ToEntityId<InventoryInformation>(InventorySet1Name);
-        private static readonly string ProductInventoryInfo2Id = ProductName.ToEntityId<InventoryInformation>(InventorySet2Name);
-        private static readonly string InventoryExportFilePath = Path.Combine(Path.GetTempPath(), "consoleinventory.zip");
+        private static string _catalog1Id;
+        private static string _catalog2Id;
+        private static string _inventorySet1Id;
+        private static string _inventorySet2Id;
+        private static string _productId;
+        private static string _productInventoryInfo1Id;
+        private static string _productInventoryInfo2Id;
+        private static string _inventoryExportFilePath;
         private static readonly DateTimeOffset BackorderAvailabilityDate = DateTimeOffset.UtcNow.AddDays(1);
 
         public static void RunScenarios()
         {
             using (new SampleScenarioScope(nameof(InventoryUX)))
             {
-                EngineExtensions.AddCatalog(Catalog1Name, $"{Catalog1Name} Display Name");
-                EngineExtensions.AddCatalog(Catalog2Name, $"{Catalog2Name} Display Name");
-                EngineExtensions.AddSellableItem(ProductId, Catalog1Id, Catalog1Name, Catalog1Name);
-                EngineExtensions.AssociateSellableItem(ProductId, Catalog2Id, Catalog2Name, Catalog2Name);
+                var partial = $"{Guid.NewGuid():N}".Substring(0, 3);
+                _catalog1Name = $"InventoryCatalog1{partial}";
+                _catalog2Name = $"InventoryCatalog2{partial}";
+                _inventorySet1Name = $"InventorySet1{partial}";
+                _inventorySet2Name = $"InventorySet2{partial}";
+                _productName = $"InventoryUXProduct{partial}";
+
+                _catalog1Id = _catalog1Name.ToEntityId<Catalog>();
+                _catalog2Id = _catalog2Name.ToEntityId<Catalog>();
+                _productId = _productName.ToEntityId<SellableItem>();
+                _inventorySet1Id = _inventorySet1Name.ToEntityId<InventorySet>();
+                _inventorySet2Id = _inventorySet2Name.ToEntityId<InventorySet>();
+                _productInventoryInfo1Id = _productName.ToEntityId<InventoryInformation>(_inventorySet1Name);
+                _productInventoryInfo2Id = _productName.ToEntityId<InventoryInformation>(_inventorySet2Name);
+                _inventoryExportFilePath = Path.Combine(Path.GetTempPath(), "consoleinventory.zip");
+
+                EngineExtensions.AddCatalog(_catalog1Name, $"{_catalog1Name} Display Name");
+                EngineExtensions.AddCatalog(_catalog2Name, $"{_catalog2Name} Display Name");
+                EngineExtensions.AddSellableItem(_productId, _catalog1Id, _catalog1Name, _catalog1Name);
+                EngineExtensions.AssociateSellableItem(_productId, _catalog2Id, _catalog2Name, _catalog2Name);
                 AddInventorySet();
                 EditInventorySet();
                 AssociateCatalogToInventorySet();
@@ -54,8 +68,6 @@
                 DisassociateSellableItemFromInventorySet();
                 DisassociateCatalogFromInventorySet();
                 ImportInventorySetsReplace().Wait();
-                EngineExtensions.DeleteSellableItem(ProductId, Catalog1Id, Catalog1Name, Catalog1Name);
-                EngineExtensions.DeleteCatalog(Catalog1Name);
             }
         }
 
@@ -63,11 +75,11 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.DisassociateCatalogFromInventorySet(InventorySet1Name, Catalog1Name);
-                EngineExtensions.AssertChildViewItemNotExists(InventorySet1Id, ChildViewNames.InventorySetSellableItems, ProductId);
+                EngineExtensions.DisassociateCatalogFromInventorySet(_inventorySet1Name, _catalog1Name);
+                EngineExtensions.AssertChildViewItemNotExists(_inventorySet1Id, ChildViewNames.InventorySetSellableItems, _productId);
 
-                EngineExtensions.DisassociateCatalogFromInventorySet(InventorySet2Name, Catalog2Name);
-                EngineExtensions.AssertChildViewItemNotExists(InventorySet2Id, ChildViewNames.InventorySetSellableItems, ProductId);
+                EngineExtensions.DisassociateCatalogFromInventorySet(_inventorySet2Name, _catalog2Name);
+                EngineExtensions.AssertChildViewItemNotExists(_inventorySet2Id, ChildViewNames.InventorySetSellableItems, _productId);
             }
         }
 
@@ -75,9 +87,9 @@
         {
             using (new SampleMethodScope())
             {
-                await EngineExtensions.ImportInventorySets(InventoryExportFilePath, "replace", "CatalogAlreadyAssociated");
+                await EngineExtensions.ImportInventorySets(_inventoryExportFilePath, "replace", "CatalogAlreadyAssociated");
 
-                var inventoryInfo1 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(ProductInventoryInfo1Id).Expand("Components($expand=ChildComponents)"));
+                var inventoryInfo1 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(_productInventoryInfo1Id).Expand("Components($expand=ChildComponents)"));
                 inventoryInfo1.Should().NotBeNull();
                 inventoryInfo1.Quantity.Should().Be(UpdatedQuantity);
                 var backorderComponent1 = inventoryInfo1.Components.OfType<BackorderableComponent>().FirstOrDefault();
@@ -86,7 +98,7 @@
                 backorderComponent1.BackorderAvailabilityDate.HasValue.Should().BeFalse();
                 backorderComponent1.BackorderLimit.Should().Be(0);
 
-                var inventoryInfo2 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(ProductInventoryInfo2Id).Expand("Components($expand=ChildComponents)"));
+                var inventoryInfo2 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(_productInventoryInfo2Id).Expand("Components($expand=ChildComponents)"));
                 inventoryInfo2.Should().NotBeNull();
                 inventoryInfo2.Quantity.Should().Be(UpdatedQuantity);
                 var backorderComponent2 = inventoryInfo2.Components.OfType<BackorderableComponent>().FirstOrDefault();
@@ -101,8 +113,8 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.DisassociateSellableItemFromInventorySet(InventorySet1Name, ProductId);
-                EngineExtensions.DisassociateSellableItemFromInventorySet(InventorySet2Name, ProductId);
+                EngineExtensions.DisassociateSellableItemFromInventorySet(_inventorySet1Name, _productId);
+                EngineExtensions.DisassociateSellableItemFromInventorySet(_inventorySet2Name, _productId);
             }
         }
 
@@ -111,13 +123,13 @@
             using (new SampleMethodScope())
             {
                 var quantityToTransfer = 12;
-                EngineExtensions.TransferInventoryInformation(InventorySet1Id, ProductId, InventorySet2Id, ProductId, quantityToTransfer);
+                EngineExtensions.TransferInventoryInformation(_inventorySet1Id, _productId, _inventorySet2Id, _productId, quantityToTransfer);
 
-                var inventoryInfo1 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(ProductInventoryInfo1Id));
+                var inventoryInfo1 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(_productInventoryInfo1Id));
                 inventoryInfo1.Should().NotBeNull();
                 inventoryInfo1.Quantity.Should().Be(UpdatedQuantity - quantityToTransfer);
 
-                var inventoryInfo2 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(ProductInventoryInfo2Id));
+                var inventoryInfo2 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(_productInventoryInfo2Id));
                 inventoryInfo2.Should().NotBeNull();
                 inventoryInfo2.Quantity.Should().Be(UpdatedQuantity + quantityToTransfer);
             }
@@ -127,7 +139,7 @@
         {
             using (new SampleMethodScope())
             {
-                await EngineExtensions.ExportInventorySets(InventoryExportFilePath, "full");
+                await EngineExtensions.ExportInventorySets(_inventoryExportFilePath, "full");
             }
         }
 
@@ -135,12 +147,15 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.EditInventoryInformation(InventorySet1Name, ProductId, new System.Collections.Generic.List<ViewProperty>
-                {
-                    new ViewProperty { Name = "Quantity", Value = UpdatedQuantity.ToString(), OriginalType = typeof(int).FullName }
-                });
+                EngineExtensions.EditInventoryInformation(
+                    _inventorySet1Name,
+                    _productId,
+                    new System.Collections.Generic.List<ViewProperty>
+                    {
+                        new ViewProperty { Name = "Quantity", Value = UpdatedQuantity.ToString(), OriginalType = typeof(int).FullName }
+                    });
 
-                var inventoryInfo1 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(ProductInventoryInfo1Id).Expand("Components($expand=ChildComponents)"));
+                var inventoryInfo1 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(_productInventoryInfo1Id).Expand("Components($expand=ChildComponents)"));
                 inventoryInfo1.Should().NotBeNull();
                 inventoryInfo1.Quantity.Should().Be(UpdatedQuantity);
                 var backorderComponent1 = inventoryInfo1.Components.OfType<BackorderableComponent>().FirstOrDefault();
@@ -155,15 +170,18 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.EditInventoryInformation(InventorySet2Name, ProductId, new System.Collections.Generic.List<ViewProperty>
-                {
-                    new ViewProperty { Name = "Quantity", Value = UpdatedQuantity.ToString(), OriginalType = typeof(int).FullName },
-                    new ViewProperty { Name = "Backorderable", Value = "true", OriginalType = typeof(bool).FullName },
-                    new ViewProperty { Name = "BackorderAvailabilityDate", Value = BackorderAvailabilityDate.ToString(), OriginalType = typeof(DateTimeOffset).FullName },
-                    new ViewProperty { Name = "BackorderLimit", Value = BackorderLimit.ToString(), OriginalType = typeof(int).FullName }
-                });
+                EngineExtensions.EditInventoryInformation(
+                    _inventorySet2Name,
+                    _productId,
+                    new System.Collections.Generic.List<ViewProperty>
+                    {
+                        new ViewProperty { Name = "Quantity", Value = UpdatedQuantity.ToString(), OriginalType = typeof(int).FullName },
+                        new ViewProperty { Name = "Backorderable", Value = "true", OriginalType = typeof(bool).FullName },
+                        new ViewProperty { Name = "BackorderAvailabilityDate", Value = BackorderAvailabilityDate.ToString(), OriginalType = typeof(DateTimeOffset).FullName },
+                        new ViewProperty { Name = "BackorderLimit", Value = BackorderLimit.ToString(), OriginalType = typeof(int).FullName }
+                    });
 
-                var inventoryInfo2 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(ProductInventoryInfo2Id).Expand("Components($expand=ChildComponents)"));
+                var inventoryInfo2 = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.InventoryInformation.ByKey(_productInventoryInfo2Id).Expand("Components($expand=ChildComponents)"));
                 inventoryInfo2.Should().NotBeNull();
                 inventoryInfo2.Quantity.Should().Be(UpdatedQuantity);
                 var backorderComponent2 = inventoryInfo2.Components.OfType<BackorderableComponent>().FirstOrDefault();
@@ -179,8 +197,8 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.AssociateSellableItemToInventorySet(InventorySet1Name, ProductId, InitialQuantity);
-                EngineExtensions.AssociateSellableItemToInventorySet(InventorySet2Name, ProductId, InitialQuantity);
+                EngineExtensions.AssociateSellableItemToInventorySet(_inventorySet1Name, _productId, InitialQuantity);
+                EngineExtensions.AssociateSellableItemToInventorySet(_inventorySet2Name, _productId, InitialQuantity);
             }
         }
 
@@ -188,8 +206,8 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.AssociateCatalogToInventorySet(InventorySet1Name, Catalog1Name);
-                EngineExtensions.AssociateCatalogToInventorySet(InventorySet2Name, Catalog2Name);
+                EngineExtensions.AssociateCatalogToInventorySet(_inventorySet1Name, _catalog1Name);
+                EngineExtensions.AssociateCatalogToInventorySet(_inventorySet2Name, _catalog2Name);
             }
         }
 
@@ -197,8 +215,8 @@
         {
             using (new SampleMethodScope())
             {
-                EngineExtensions.AddInventorySet(InventorySet1Name);
-                EngineExtensions.AddInventorySet(InventorySet2Name);
+                EngineExtensions.AddInventorySet(_inventorySet1Name);
+                EngineExtensions.AddInventorySet(_inventorySet2Name);
             }
         }
 
@@ -206,7 +224,7 @@
         {
             using (new SampleMethodScope())
             {
-                var view = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.GetEntityView(InventorySet1Id, "Details", "EditInventorySet", string.Empty));
+                var view = Proxy.GetValue(EngineExtensions.AuthoringContainer.Value.GetEntityView(_inventorySet1Id, "Details", "EditInventorySet", string.Empty));
                 view.Should().NotBeNull();
                 view.Policies.Should().BeEmpty();
                 view.Properties.Should().NotBeEmpty();
@@ -222,7 +240,7 @@
                 };
 
                 var result = Proxy.DoCommand(EngineExtensions.AuthoringContainer.Value.DoAction(view));
-                result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                result.Messages.Should().NotContainMessageCode("error");
             }
         }
     }

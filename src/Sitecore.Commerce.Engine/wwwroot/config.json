@@ -22,10 +22,7 @@
     "SslPfxPassword": "sitecore"
   },
   "ApplicationInsights": {
-    "InstrumentationKey": "",
-    "MinimumLevel": "Warning",
-    "DeveloperMode": true,
-    "TelemetryEnabled": false
+    "InstrumentationKey": ""
   },
   "Logging": {
     "IncludeScopes": false,
@@ -34,12 +31,15 @@
       "System": "Warning",
       "Microsoft": "Warning"
     },
-    "ApplicationInsightsLoggingEnabled": false,
-    "PipelineTraceLoggingEnabled": false,
-    "SerilogLoggingEnabled": true
+    "SerilogLoggingEnabled": true,
+    "PipelineTraceLoggingEnabled": false
   },
   "Serilog": {
-    "Using":  ["Serilog.Sinks.Literate", "Serilog.Sinks.File"],
+    "Using": [
+      "Serilog.Sinks.Literate",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.ApplicationInsights"
+    ],
     "MinimumLevel": {
       "Default": "Warning",
       "Override": {
@@ -52,7 +52,7 @@
   "Certificates": {
     "Certificates": [
       {
-        "Thumbprint": "434947B07E07ABEB02405CBCE54C83F20AE0141F",
+        "Thumbprint": "D7927735303DEAE01F32D18701E1FED6EAE443F3",
         "DefaultRoles": [
           "sitecore\\QA",
           "sitecore\\Commerce Business User"
@@ -60,5 +60,39 @@
       }
     ],
     "CertificateHeaderName": "X-CommerceEngineCert"
-  } 
+  },
+  "Caching": {
+    "Memory": {
+      "Enabled": false,
+      "CacheStoreName": "Commerce-Memory-Store"
+    },
+    "Redis": {
+      "Enabled": true,
+      "CacheStoreName": "Commerce-Redis-Store",
+      "Options": {
+        "Configuration": "localhost",
+        "InstanceName": "Redis"
+      }
+    }
+  },
+  "Compression": {
+    "Enabled": true,
+    "ResponseCompressionOptions": {
+      "EnableForHttps": true,
+      "MimeTypes": [
+        "text/plain",
+        "text/css",
+        "application/javascript",
+        "text/html",
+        "application/xml",
+        "text/xml",
+        "application/json",
+        "text/json",
+        "application/wasm"
+      ]
+    },
+    "GzipCompressionProviderOptions": {
+      "Level": "Fastest"
+    }
+  }
 }

@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InitializeEnvironmentShopsBlock.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2016 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
 
 namespace Plugin.Sample.AdventureWorks
 {
@@ -22,17 +18,17 @@ namespace Plugin.Sample.AdventureWorks
     [PipelineDisplayName(AwConstants.InitializeEnvironmentShopsBlock)]
     public class InitializeEnvironmentShopsBlock : PipelineBlock<string, string, CommercePipelineExecutionContext>
     {
-        private readonly IPersistEntityPipeline _persistEntityPipeline;
+        private readonly IAddEntitiesPipeline _addEntitiesPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InitializeEnvironmentShopsBlock"/> class.
         /// </summary>
-        /// <param name="persistEntityPipeline">
-        /// The find entity pipeline.
+        /// <param name="addEntitiesPipeline">
+        /// The add entities pipeline.
         /// </param>
-        public InitializeEnvironmentShopsBlock(IPersistEntityPipeline persistEntityPipeline)
+        public InitializeEnvironmentShopsBlock(IAddEntitiesPipeline addEntitiesPipeline)
         {
-            this._persistEntityPipeline = persistEntityPipeline;
+            this._addEntitiesPipeline = addEntitiesPipeline;
         }
 
         /// <summary>
@@ -61,66 +57,44 @@ namespace Plugin.Sample.AdventureWorks
             context.Logger.LogInformation($"{this.Name}.InitializingArtifactSet: ArtifactSet={artifactSet}");
 
             // Default Shop Entity
-            await this._persistEntityPipeline.Run(
-                new PersistEntityArgument(
-                    new Shop
-                    {
-                        Id = $"{CommerceEntity.IdPrefix<Shop>()}Storefront",
-                        Name = "Storefront",
-                        FriendlyId = "Storefront",
-                        DisplayName = "Storefront",
-                        Components = new List<Component>
-                        {
-                            new ListMembershipsComponent { Memberships = new List<string> { CommerceEntity.ListName<Shop>() } }
-                        }
-                    }),
-                context).ConfigureAwait(false);
+            var persistEntitiesArgument = new List<PersistEntityArgument>
+            {
+                new PersistEntityArgument(CreateShop($"{CommerceEntity.IdPrefix<Shop>()}Storefront",
+                    "Storefront", "Storefront", "Storefront")),
 
-            await this._persistEntityPipeline.Run(
-                new PersistEntityArgument(
-                    new Shop
-                    {
-                        Id = $"{CommerceEntity.IdPrefix<Shop>()}AwShopCanada",
-                        Name = "AwShopCanada",
-                        FriendlyId = "AwShopCanada",
-                        DisplayName = "Adventure Works Canada",
-                        Components = new List<Component>
-                        {
-                            new ListMembershipsComponent { Memberships = new List<string> { CommerceEntity.ListName<Shop>() } }
-                        }
-                    }),
-                context).ConfigureAwait(false);
+                new PersistEntityArgument(CreateShop($"{CommerceEntity.IdPrefix<Shop>()}AwShopCanada",
+                    "AwShopCanada", "Adventure Works Canada", "AwShopCanada")),
 
-            await this._persistEntityPipeline.Run(
-                new PersistEntityArgument(
-                    new Shop
-                    {
-                        Id = $"{CommerceEntity.IdPrefix<Shop>()}AwShopUsa",
-                        Name = "AwShopUsa",
-                        FriendlyId = "AwShopUsa",
-                        DisplayName = "Adventure Works USA",
-                        Components = new List<Component>
-                        {
-                            new ListMembershipsComponent { Memberships = new List<string> { CommerceEntity.ListName<Shop>() } }
-                        }
-                    }),
-                context).ConfigureAwait(false);
+                new PersistEntityArgument(CreateShop($"{CommerceEntity.IdPrefix<Shop>()}AwShopUsa",
+                    "AwShopUsa", "Adventure Works USA", "AwShopUsa")),
 
-            await this._persistEntityPipeline.Run(
-                new PersistEntityArgument(
-                    new Shop
-                    {
-                        Id = $"{CommerceEntity.IdPrefix<Shop>()}AwShopGermany",
-                        Name = "AwShopGermany",
-                        DisplayName = "Adventure Works Germany",
-                        Components = new List<Component>
-                        {
-                            new ListMembershipsComponent { Memberships = new List<string> { CommerceEntity.ListName<Shop>() } }
-                        }
-                    }),
-                context).ConfigureAwait(false);
+                new PersistEntityArgument(CreateShop($"{CommerceEntity.IdPrefix<Shop>()}AwShopGermany",
+                    "AwShopGermany", "Adventure Works Germany"))
+            };
 
+            await this._addEntitiesPipeline.Run(new PersistEntitiesArgument(persistEntitiesArgument), context).ConfigureAwait(false);
             return arg;
+        }
+
+        private Shop CreateShop(string id, string name, string displayName, string friendlyId = null)
+        {
+            var shop = new Shop
+            {
+                Id = id,
+                Name = name,
+                DisplayName = displayName,
+                FriendlyId = friendlyId
+            };
+
+            shop.AddComponents(new ListMembershipsComponent
+            {
+                Memberships = new List<string>
+                {
+                    CommerceEntity.ListName<Shop>()
+                }
+            });
+
+            return shop;
         }
     }
 }

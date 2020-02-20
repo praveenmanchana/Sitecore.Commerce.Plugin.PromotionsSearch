@@ -15,7 +15,7 @@
             {
                 Shop = Sample.Console.Program.DefaultStorefront,
                 ShopperId = "InternationalShopperKatrinaId",
-                Environment = "AdventureWorksShops",
+                Environment = EnvironmentConstants.AdventureWorksShops,
                 Language = "en-CA",
                 Currency = "EUR",
                 PolicyKeys = "ZeroMinionDelay|xActivityPerf",

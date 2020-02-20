@@ -17,670 +17,845 @@
 
     public static class PricingUX
     {
-        private const string BookId = "Entity-PriceBook-ConsoleUxPriceBook";
-        private const string CardId = "Entity-PriceCard-ConsoleUxPriceBook-ConsoleUxPriceCard";
-        private static string _priceSnapshotId;
-        private static string _priceCardFriendlyId;
+        private static string _bookId;
+        private static Guid _bookUId;
+        private static string _snapshotId;
+        private static string _cardFriendlyId;
+        private static string _cardId;
+        private static Guid _cardUId;
 
         private static readonly Sitecore.Commerce.Engine.Container ShopsContainer = new CsrSheila().Context.ShopsContainer();
-		private static readonly Sitecore.Commerce.Engine.Container AuthoringContainer = new AnonymousCustomerJeff(EnvironmentConstants.AdventureWorksAuthoring)
+        private static readonly Sitecore.Commerce.Engine.Container AuthoringContainer = new AnonymousCustomerJeff(EnvironmentConstants.AdventureWorksAuthoring)
             .Context.AuthoringContainer();
 
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
+            using (new SampleScenarioScope("Pricing UX"))
+            {
+                AddPriceBook();
+                EditPriceBook();
 
-            Console.WriteLine("Begin PricingUX");
+                Books();
+                BookMaster();
+                BookDetails();
 
-            AddPriceBook();
-            EditPriceBook();
+                DisassociateCatalog();
+                AssociateCatalog();
+                BookCatalogs();
 
-            Books();
-            BookMaster();
-            BookDetails();
+                AddPriceCard();
+                BookCards();
+                CardMaster();
+                CardDetails();
+                EditPriceCard();
+                DuplicatePriceCard();
 
-            DisassociateCatalog();
-            AssociateCatalog();
-            BookCatalogs();
+                AddPriceSnapshot();
+                CardSnapshots();
+                EditPriceSnapshot();
+                EditPriceSnapshot_WithTags();
+                SetSnapshotApprovalStatus();
 
-            AddPriceCard();
-            BookCards();
-            CardMaster();
-            CardDetails();
-            EditPriceCard();
-            DuplicatePriceCard();
+                AddCurrency();
+                EditCurrency();
+                RemoveCurrency();
 
-            AddPriceSnapshot();
-            CardSnapshots();
-            EditPriceSnapshot();
-            EditPriceSnapshot_WithTags();
-            SetSnapshotApprovalStatus();
-
-            AddCurrency();
-            EditCurrency();
-            RemoveCurrency();
-
-            RemovePriceSnapshot();
-            DeletePriceCard();
-
-            watch.Stop();
-
-            Console.WriteLine($"End PricingUX :{watch.ElapsedMilliseconds} ms");
+                RemovePriceSnapshot();
+                DeletePriceCard();
+            }
         }
 
         #region Books
-
         private static void Books()
         {
-            Console.WriteLine("Begin PriceBooks View");
-
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView(string.Empty, "PriceBooks", string.Empty, string.Empty));
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().BeEmpty();
-            result.ChildViews.Should().NotBeEmpty();
-
-            foreach (var childView in result.ChildViews.Cast<EntityView>())
+            using (new SampleMethodScope())
             {
-                childView.Should().NotBeNull();
-                childView.Properties.Should().NotBeEmpty();
-                childView.Policies.Should().BeEmpty();
-                childView.ChildViews.Should().BeEmpty();
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(string.Empty, "PriceBooks", string.Empty, string.Empty));
+                result.Should().NotBeNull();
+                result.ChildViews.Should().NotBeEmpty();
+
+                foreach (var childView in result.ChildViews.Cast<EntityView>())
+                {
+                    childView.Should().NotBeNull();
+                    childView.Properties.Should().NotBeEmpty();
+                    childView.Policies.Should().BeEmpty();
+                    childView.ChildViews.Should().BeEmpty();
+                }
             }
         }
 
         private static void BookMaster()
         {
-            Console.WriteLine("Begin BookMaster View");
-
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView(BookId, "Master", string.Empty, string.Empty));
-
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            result.ChildViews.Should().NotBeEmpty();
-
-            foreach (var childView in result.ChildViews.Cast<EntityView>())
+            using (new SampleMethodScope())
             {
-                childView.Should().NotBeNull();
-                childView.Policies.Should().NotBeEmpty();
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_bookId, "Master", string.Empty, string.Empty));
+
+                result.Should().NotBeNull();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                result.ChildViews.Should().NotBeEmpty();
+
+                foreach (var childView in result.ChildViews.Cast<EntityView>())
+                {
+                    childView.Should().NotBeNull();
+                    childView.Policies.Should().NotBeEmpty();
+                }
             }
         }
 
         private static void BookDetails()
         {
-            Console.WriteLine("Begin BookDetails View");
-
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView(BookId, "Details", string.Empty, string.Empty));
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            result.ChildViews.Should().BeEmpty();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_bookId, "Details", string.Empty, string.Empty));
+                result.Should().NotBeNull();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                result.ChildViews.Should().BeEmpty();
+            }
         }
 
         private static void BookCards()
         {
-            Console.WriteLine("Begin Books Cards View");
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(AuthoringContainer.GetEntityView(_bookId, "PriceBookCards", string.Empty, string.Empty));
+                result.Should().NotBeNull();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                //result.ChildViews.Should().NotBeEmpty();
 
-            var result = Proxy.GetValue(AuthoringContainer.GetEntityView(BookId, "PriceBookCards", string.Empty, string.Empty));
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            //result.ChildViews.Should().NotBeEmpty();
-
-            //foreach (var childView in result.ChildViews.Cast<EntityView>())
-            //{
-            //    childView.Should().NotBeNull();
-            //    childView.Properties.Should().NotBeEmpty();
-            //    childView.Policies.Should().BeEmpty();
-            //    childView.ChildViews.Should().BeEmpty();
-            //}
+                //foreach (var childView in result.ChildViews.Cast<EntityView>())
+                //{
+                //    childView.Should().NotBeNull();
+                //    childView.Properties.Should().NotBeEmpty();
+                //    childView.Policies.Should().BeEmpty();
+                //    childView.ChildViews.Should().BeEmpty();
+                //}
+            }
         }
 
         private static void BookCatalogs()
         {
-            Console.WriteLine("Begin Books Catalogs View");
-
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView(BookId, "PriceBookCatalogs", string.Empty, string.Empty));
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            result.ChildViews.Should().BeEmpty();
-
-            foreach (var childView in result.ChildViews.Cast<EntityView>())
+            using (new SampleMethodScope())
             {
-                childView.Should().NotBeNull();
-                childView.Properties.Should().NotBeEmpty();
-                childView.Policies.Should().BeEmpty();
-                childView.ChildViews.Should().BeEmpty();
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _bookId,
+                        "PriceBookCatalogs",
+                        string.Empty,
+                        string.Empty));
+                result.Should().NotBeNull();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                result.ChildViews.Should().BeEmpty();
+
+                foreach (var childView in result.ChildViews.Cast<EntityView>())
+                {
+                    childView.Should().NotBeNull();
+                    childView.Properties.Should().NotBeEmpty();
+                    childView.Policies.Should().BeEmpty();
+                    childView.ChildViews.Should().BeEmpty();
+                }
             }
         }
 
         private static void AddPriceBook()
         {
-            Console.WriteLine("Begin AddPriceBookUX");
-
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(string.Empty, "Details", "AddPriceBook", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-
-            view.Properties = new ObservableCollection<ViewProperty>
+            using (new SampleMethodScope())
             {
-                new ViewProperty { Name = "Name", Value = "InvalidPriceBook{" },
-            };
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
-            ConsoleExtensions.WriteColoredLine(ConsoleColor.Yellow, "Expected error");
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(string.Empty, "Details", "AddPriceBook", string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            view.Properties = new ObservableCollection<ViewProperty>
-            {
-                new ViewProperty { Name = "Name", Value = "ConsoleUxPriceBook" },
-                new ViewProperty { Name = "DisplayName", Value = "displayname" },
-                new ViewProperty { Name = "Description", Value = "description" },
-                new ViewProperty
+                view.Properties = new ObservableCollection<ViewProperty>
                 {
-                    Name = "CurrencySetId",
-                    Value = "{0F65742E-317F-44B0-A4DE-EBF06209E8EE}"
-                }
-            };
-            result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                    new ViewProperty { Name = "Name", Value = "InvalidPriceBook{" },
+                };
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().ContainMessageCode("validationerror");
+                ConsoleExtensions.WriteExpectedError();
+
+                var partialId = $"{Guid.NewGuid():N}".Substring(0, 5);
+                var bookName = $"Console{partialId}";
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "Name", Value = bookName },
+                    new ViewProperty { Name = "DisplayName", Value = "displayname" },
+                    new ViewProperty { Name = "Description", Value = "description" },
+                    new ViewProperty
+                    {
+                        Name = "CurrencySetId",
+                        Value = "{0F65742E-317F-44B0-A4DE-EBF06209E8EE}"
+                    }
+                };
+                result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                var persistedModel = result.Models.OfType<PersistedEntityModel>().FirstOrDefault();
+                persistedModel.Should().NotBeNull();
+                _bookUId = persistedModel.EntityUniqueId;
+                _bookId = persistedModel.EntityId;
+            }
         }
 
         private static void EditPriceBook()
         {
-            Console.WriteLine("Begin EditPriceBookUX");
-
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(BookId, "Details", "EditPriceBook", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            view.Properties = new ObservableCollection<ViewProperty>
+            using (new SampleMethodScope())
             {
-                new ViewProperty { Name = "Description", Value = "edited description" },
-                new ViewProperty { Name = "DisplayName", Value = "edited display name" },
-                new ViewProperty { Name = "CurrencySetId", Value = "{0F65742E-317F-44B0-A4DE-EBF06209E8EE}" },
-                version
-            };
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _bookId,
+                        "Details",
+                        "EditPriceBook",
+                        string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
+
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "Description", Value = "edited description" },
+                    new ViewProperty { Name = "DisplayName", Value = "edited display name" },
+                    new ViewProperty { Name = "CurrencySetId", Value = "{0F65742E-317F-44B0-A4DE-EBF06209E8EE}" },
+                    version
+                };
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
         private static void AssociateCatalog()
         {
-            Console.WriteLine("Begin AssociateCatalogUX");
-
-            var view = Proxy.GetValue(AuthoringContainer.GetEntityView("Entity-PriceBook-AdventureWorksPriceBook", "PriceBookCatalogs", "AssociateCatalog", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-            foreach (var property in view.Properties)
+            using (new SampleMethodScope())
             {
-                property.Name.Should().NotBeNullOrEmpty();
-                if (property.Name.Equals("CatalogName"))
+                var view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        "Entity-PriceBook-AdventureWorksPriceBook",
+                        "PriceBookCatalogs",
+                        "AssociateCatalog",
+                        string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
+                foreach (var property in view.Properties)
                 {
-                    property.Policies.Should().NotBeEmpty();
+                    property.Name.Should().NotBeNullOrEmpty();
+                    if (property.Name.Equals("CatalogName"))
+                    {
+                        property.Policies.Should().NotBeEmpty();
+                    }
+                    else
+                    {
+                        property.Policies.Should().BeEmpty();
+                    }
                 }
-                else
+
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+
+                view.Properties = new ObservableCollection<ViewProperty>
                 {
-                    property.Policies.Should().BeEmpty();
-                }
+                    new ViewProperty { Name = "CatalogName", Value = "Adventure Works Catalog" },
+                    version
+                };
+                var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
             }
-
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "CatalogName", Value = "Adventure Works Catalog" },
-                                      version
-                                  };
-            var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
         }
 
         private static void DisassociateCatalog()
         {
-            Console.WriteLine("Begin DisassociateCatalogUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        "Entity-PriceBook-AdventureWorksPriceBook",
+                        string.Empty,
+                        "DisassociateCatalog",
+                        "Adventure Works Catalog"));
+                view.Should().NotBeNull();
+                view.Properties.Should().NotBeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView("Entity-PriceBook-AdventureWorksPriceBook", string.Empty, "DisassociateCatalog", "Adventure Works Catalog"));
-            view.Should().NotBeNull();
-            view.Properties.Should().NotBeEmpty();
-
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
-
         #endregion
 
         #region Cards
-
         private static void CardMaster()
         {
-            Console.WriteLine("Begin CardMaster View");
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        "Entity-PriceCard-AdventureWorksPriceBook-AdventureWorksPriceCard",
+                        "Master",
+                        string.Empty,
+                        string.Empty));
 
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView("Entity-PriceCard-AdventureWorksPriceBook-AdventureWorksPriceCard", "Master", string.Empty, string.Empty));
-
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            result.ChildViews.Should().NotBeEmpty();
+                result.Should().NotBeNull();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                result.ChildViews.Should().NotBeEmpty();
+            }
         }
 
         private static void CardSnapshots()
         {
-            Console.WriteLine("Begin CardSnapshots View");
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        "Entity-PriceCard-AdventureWorksPriceBook-AdventureWorksPriceCard",
+                        "PriceCardSnapshots",
+                        string.Empty,
+                        string.Empty));
 
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView("Entity-PriceCard-AdventureWorksPriceBook-AdventureWorksPriceCard", "PriceCardSnapshots", string.Empty, string.Empty));
-
-            result.Should().NotBeNull();
-            result.EntityId.Should().NotBeNullOrEmpty();
-            result.ItemId.Should().BeNullOrEmpty();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            result.ChildViews.Should().NotBeEmpty();
+                result.Should().NotBeNull();
+                result.EntityId.Should().NotBeNullOrEmpty();
+                result.ItemId.Should().BeNullOrEmpty();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                result.ChildViews.Should().NotBeEmpty();
+            }
         }
 
         private static void CardDetails()
         {
-            Console.WriteLine("Begin CardDetails View");
-
-            var result = Proxy.GetValue(ShopsContainer.GetEntityView("Entity-PriceCard-AdventureWorksPriceBook-AdventureWorksPriceCard", "Details", string.Empty, string.Empty));
-            result.Should().NotBeNull();
-            result.Policies.Should().NotBeEmpty();
-            result.Properties.Should().NotBeEmpty();
-            result.ChildViews.Should().BeEmpty();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        "Entity-PriceCard-AdventureWorksPriceBook-AdventureWorksPriceCard",
+                        "Details",
+                        string.Empty,
+                        string.Empty));
+                result.Should().NotBeNull();
+                result.Policies.Should().NotBeEmpty();
+                result.Properties.Should().NotBeEmpty();
+                result.ChildViews.Should().BeEmpty();
+            }
         }
 
         private static void AddPriceCard()
         {
-            Console.WriteLine("Begin AddPriceCardUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _bookId,
+                        "Details",
+                        "AddPriceCard",
+                        string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(AuthoringContainer.GetEntityView(BookId, "Details", "AddPriceCard", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "Name", Value = "InvalidPriceCard^" },
+                    new ViewProperty { Name = "BookName", Value = "ConsoleUxPriceBook" },
+                    version
+                };
+                var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().ContainMessageCode("validationerror");
+                ConsoleExtensions.WriteExpectedError();
 
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "Name", Value = "InvalidPriceCard^" },
-                                      new ViewProperty { Name = "BookName", Value = "ConsoleUxPriceBook" },
-                                      //new ViewProperty { Name = "Description", Value = "card's description" },
-                                      //new ViewProperty { Name = "DisplayName", Value = "card's display name" },
-                                      version
-                                  };
-            var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("validationerror", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
-            ConsoleExtensions.WriteColoredLine(ConsoleColor.Yellow, "Expected error");
-
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "Name", Value = "ConsoleUxPriceCard" },
-                                      new ViewProperty { Name = "BookName", Value = "ConsoleUxPriceBook" },
-                                      new ViewProperty { Name = "Description", Value = "card's description" },
-                                      new ViewProperty { Name = "DisplayName", Value = "card's display name" },
-                                      version
-                                  };
-            result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Models.OfType<PriceCardAdded>().FirstOrDefault().Should().NotBeNull();
-            _priceCardFriendlyId = result.Models.OfType<PriceCardAdded>().FirstOrDefault()?.PriceCardFriendlyId;
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "Name", Value = "ConsoleUxPriceCard" },
+                    new ViewProperty { Name = "BookName", Value = "ConsoleUxPriceBook" },
+                    new ViewProperty { Name = "Description", Value = "card's description" },
+                    new ViewProperty { Name = "DisplayName", Value = "card's display name" },
+                    version
+                };
+                result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                var persistedModel = result.Models.OfType<PersistedEntityModel>().FirstOrDefault();
+                persistedModel.Should().NotBeNull();
+                _cardId = persistedModel.EntityId;
+                _cardUId = persistedModel.EntityUniqueId;
+                _cardFriendlyId = result.Models.OfType<PriceCardAdded>().FirstOrDefault()?.PriceCardFriendlyId;
+            }
         }
 
         private static void EditPriceCard()
         {
-            Console.WriteLine("Begin EditPriceCardUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _cardId,
+                        "Details",
+                        "EditPriceCard",
+                        string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(AuthoringContainer.GetEntityView(CardId, "Details", "EditPriceCard", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "Description", Value = "edited description" },
-                                      new ViewProperty { Name = "DisplayName", Value = "edited display anem" },
-                                      version
-                                  };
-            var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "Description", Value = "edited description" },
+                    new ViewProperty { Name = "DisplayName", Value = "edited display name" },
+                    version
+                };
+                var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
         private static void DuplicatePriceCard()
         {
-            Console.WriteLine("Begin DuplicatePriceCardUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _cardId,
+                        "Details",
+                        "DuplicatePriceCard",
+                        string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(CardId, "Details", "DuplicatePriceCard", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "DuplicateCardName", Value = "ConsoleUxPriceCardDuplicate" },
-                                      version
-                                  };
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-
-            // DELETING CLONE CARD
-            result = Proxy.DoCommand(ShopsContainer.DeletePriceCard("Entity-PriceCard-ConsoleUxPriceBook-ConsoleUxPriceCardDuplicate"));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty { Name = "DuplicateCardName", Value = "ConsoleUxPriceCardDuplicate" },
+                    version
+                };
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
         private static void DeletePriceCard()
         {
-            Console.WriteLine("Begin DeletePriceCardUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(_bookId, "Details", string.Empty, string.Empty));
+                view.Should().NotBeNull();
+                view.Properties.Should().NotBeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(BookId, "Details", string.Empty, string.Empty));
-            view.Should().NotBeNull();
-            view.Properties.Should().NotBeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            view.Action = "DeletePriceCard";
-            view.ItemId = CardId;
-            view.Properties = new ObservableCollection<ViewProperty> { version };
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                view.Action = "DeletePriceCard";
+                view.ItemId = _cardId;
+                view.Properties = new ObservableCollection<ViewProperty> { version };
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
-
         #endregion
 
         #region Snapshots
-
         private static void AddPriceSnapshot()
         {
-            Console.WriteLine("Begin AddPriceSnapshotUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _cardId,
+                        "PriceSnapshotDetails",
+                        "AddPriceSnapshot",
+                        string.Empty));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(CardId, "PriceSnapshotDetails", "AddPriceSnapshot", string.Empty));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            var snapshotDate = DateTimeOffset.Now;
-            view.Properties = new ObservableCollection<ViewProperty>
+                var snapshotDate = DateTimeOffset.Now;
+                view.Properties = new ObservableCollection<ViewProperty>
                 {
-                    new ViewProperty { Name = "BeginDate", Value = snapshotDate.ToString(CultureInfo.InvariantCulture) },
+                    new ViewProperty
+                        { Name = "BeginDate", Value = snapshotDate.ToString(CultureInfo.InvariantCulture) },
                     version
                 };
 
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Models.OfType<PriceSnapshotAdded>().FirstOrDefault().Should().NotBeNull();
-            _priceSnapshotId = result.Models.OfType<PriceSnapshotAdded>().FirstOrDefault()?.PriceSnapshotId;
-            var card = Proxy.GetValue(ShopsContainer.PriceCards.ByKey(_priceCardFriendlyId).Expand("Snapshots($expand=SnapshotComponents),Components"));
-            card.Should().NotBeNull();
-            var snapshot = card?.Snapshots.FirstOrDefault(s => s.Id.EndsWith(_priceSnapshotId));
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Draft");
-            snapshot?.BeginDate.Should().BeCloseTo(snapshotDate, 1000);
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Models.OfType<PriceSnapshotAdded>().FirstOrDefault().Should().NotBeNull();
+                _snapshotId = result.Models.OfType<PriceSnapshotAdded>().FirstOrDefault()?.PriceSnapshotId;
+                var card = Proxy.GetValue(
+                    ShopsContainer.PriceCards.ByKey(_cardFriendlyId)
+                        .Expand("Snapshots($expand=SnapshotComponents),Components"));
+                card.Should().NotBeNull();
+                var snapshot = card?.Snapshots.FirstOrDefault(s => s.Id.EndsWith(_snapshotId));
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Draft");
+                snapshot?.BeginDate.Should().BeCloseTo(snapshotDate, 1000);
+            }
         }
 
         private static void EditPriceSnapshot()
         {
-            Console.WriteLine("Begin EditPriceSnapshotUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _cardId,
+                        "PriceSnapshotDetails",
+                        "EditPriceSnapshot",
+                        _snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(CardId, "PriceSnapshotDetails", "EditPriceSnapshot", _priceSnapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+                var beginDate = DateTimeOffset.Now.AddDays(30);
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    new ViewProperty
+                    {
+                        Name = "BeginDate",
+                        Value = beginDate.ToString(CultureInfo.InvariantCulture)
+                    },
+                    version
+                };
 
-            var beginDate = DateTimeOffset.Now.AddDays(30);
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty
-                                          {
-                                              Name = "BeginDate",
-                                              Value = beginDate.ToString(CultureInfo.InvariantCulture)
-                                          },
-                                      version
-                                  };
-
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            var card = Proxy.GetValue(ShopsContainer.PriceCards.ByKey(_priceCardFriendlyId).Expand("Snapshots($expand=SnapshotComponents),Components"));
-            card.Should().NotBeNull();
-            var snapshot = card?.Snapshots.FirstOrDefault(s => s.Id.EndsWith(_priceSnapshotId));
-            snapshot?.BeginDate.Should().BeCloseTo(beginDate, 1000);
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                var card = Proxy.GetValue(
+                    ShopsContainer.PriceCards.ByKey(_cardFriendlyId)
+                        .Expand("Snapshots($expand=SnapshotComponents),Components"));
+                card.Should().NotBeNull();
+                var snapshot = card?.Snapshots.FirstOrDefault(s => s.Id.EndsWith(_snapshotId));
+                snapshot?.BeginDate.Should().BeCloseTo(beginDate, 1000);
+            }
         }
 
         private static void EditPriceSnapshot_WithTags()
         {
-            Console.WriteLine("Begin EditPriceSnapshotUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _cardId,
+                        "PriceSnapshotDetails",
+                        "EditPriceSnapshot",
+                        _snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(CardId, "PriceSnapshotDetails", "EditPriceSnapshot", _priceSnapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                var beginDate = DateTimeOffset.Now.AddDays(30);
+                view.Properties.FirstOrDefault(p => p.Name.Equals("BeginDate")).Value =
+                    beginDate.ToString(CultureInfo.InvariantCulture);
+                view.Properties.FirstOrDefault(p => p.Name.Equals("IncludedTags")).Value =
+                    "['IncludedTag1', 'IncludedTag2']";
 
-            var beginDate = DateTimeOffset.Now.AddDays(30);
-            view.Properties.FirstOrDefault(p => p.Name.Equals("BeginDate")).Value = beginDate.ToString(CultureInfo.InvariantCulture);
-            view.Properties.FirstOrDefault(p => p.Name.Equals("IncludedTags")).Value = "['IncludedTag1', 'IncludedTag2']";
-
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            var card = Proxy.GetValue(ShopsContainer.PriceCards.ByKey(_priceCardFriendlyId).Expand("Snapshots($expand=SnapshotComponents),Components"));
-            card.Should().NotBeNull();
-            var snapshot = card?.Snapshots.FirstOrDefault(s => s.Id.EndsWith(_priceSnapshotId));
-            snapshot?.BeginDate.Should().BeCloseTo(beginDate, 1000);
-            snapshot?.Tags.Should().NotBeNullOrEmpty();
-            snapshot?.Tags.Count.Should().Be(2);
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                var card = Proxy.GetValue(
+                    ShopsContainer.PriceCards.ByKey(_cardFriendlyId)
+                        .Expand("Snapshots($expand=SnapshotComponents),Components"));
+                card.Should().NotBeNull();
+                var snapshot = card?.Snapshots.FirstOrDefault(s => s.Id.EndsWith(_snapshotId));
+                snapshot?.BeginDate.Should().BeCloseTo(beginDate, 1000);
+                snapshot?.Tags.Should().NotBeNullOrEmpty();
+                snapshot?.Tags.Count.Should().Be(2);
+            }
         }
 
         private static void RemovePriceSnapshot()
         {
-            Console.WriteLine("Begin RemovePriceSnapshotUX");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        _cardId,
+                        "PriceSnapshotDetails",
+                        string.Empty,
+                        _snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().NotBeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().NotBeEmpty();
 
-            var view = Proxy.GetValue(ShopsContainer.GetEntityView(CardId, "PriceSnapshotDetails", string.Empty, _priceSnapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().NotBeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().NotBeEmpty();
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
-
-            view.Action = "RemovePriceSnapshot";
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      version
-                                  };
-            var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                view.Action = "RemovePriceSnapshot";
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    version
+                };
+                var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
 
         private static void SetSnapshotApprovalStatus()
         {
-            Console.WriteLine("Begin SetSnapshotApprovalStatusUX");
+            using (new SampleMethodScope())
+            {
+                var container = new CsrSheila().Context.ShopsContainer();
 
-            var container = new CsrSheila().Context.ShopsContainer();
+                var result = Proxy.DoCommand(
+                    container.AddPriceCard(_bookId, "consoleapprovalpricecard", "displayname", "description"));
+                result.Messages.Should().NotContainErrors();
+                var persistedModel = result.Models.OfType<PersistedEntityModel>().FirstOrDefault();
+                persistedModel.Should().NotBeNull();
+                var cardId = persistedModel.EntityId;
+                var cardUId = persistedModel.EntityUniqueId;
+                var cardFriendlyId = result.Models.OfType<PriceCardAdded>().FirstOrDefault()?.PriceCardFriendlyId;
 
-            var result = Proxy.DoCommand(container.AddPriceCard(BookId, "consoleapprovalpricecard", "displayname", "description"));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            var cardFriendlyId = result.Models.OfType<PriceCardAdded>().FirstOrDefault()?.PriceCardFriendlyId;
-            cardFriendlyId.Should().NotBeNullOrEmpty();
-            var cardId = $"Entity-PriceCard-{cardFriendlyId}";
+                var snapshotDate = DateTimeOffset.Now.AddDays(3);
+                result = Proxy.DoCommand(container.AddPriceSnapshot(cardId, snapshotDate));
+                result.Messages.Should().NotContainErrors();
+                var snapshotId = result.Models.OfType<PriceSnapshotAdded>().FirstOrDefault()?.PriceSnapshotId;
 
-            var snapshotDate = DateTimeOffset.Now.AddDays(3);
-            result = Proxy.DoCommand(container.AddPriceSnapshot(cardId, snapshotDate));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            var snapshotId = result.Models.OfType<PriceSnapshotAdded>().FirstOrDefault()?.PriceSnapshotId;
+                result = Proxy.DoCommand(ShopsContainer.AddPriceTier(cardId, snapshotId, "USD", 3, 13));
+                result.Messages.Should().NotContainErrors();
+                result.Models.OfType<PriceTierAdded>().FirstOrDefault().Should().NotBeNull();
 
-            result = Proxy.DoCommand(ShopsContainer.AddPriceTier(cardId, snapshotId, "USD", 3, 13));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Models.OfType<PriceTierAdded>().FirstOrDefault().Should().NotBeNull();
+                // REQUEST APPROVAL
+                var view = Proxy.GetValue(
+                    container.GetEntityView(
+                        cardId,
+                        "SetSnapshotApprovalStatus",
+                        "RequestSnapshotApproval",
+                        snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "request approval comment";
+                result = Proxy.DoCommand(container.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeTrue();
 
-            // REQUEST APPROVAL
-            var view = Proxy.GetValue(container.GetEntityView(cardId, "SetSnapshotApprovalStatus", "RequestSnapshotApproval", snapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "request approval comment";
-            result = Proxy.DoCommand(container.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
+                var card = Pricing.GetPriceCard(cardFriendlyId);
+                var snapshot =
+                    card.Snapshots.FirstOrDefault(s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
+                snapshot.Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>()
+                    .FirstOrDefault()
+                    ?.Status.Should()
+                    .Be("ReadyForApproval");
 
-            var card = Pricing.GetPriceCard(cardFriendlyId);
-            var snapshot = card.Snapshots.FirstOrDefault(s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
-            snapshot.Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("ReadyForApproval");
+                // REJECT
+                view = Proxy.GetValue(
+                    container.GetEntityView(
+                        cardId,
+                        "SetSnapshotApprovalStatus",
+                        "RejectSnapshot",
+                        snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "reject comment";
+                result = Proxy.DoCommand(container.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeTrue();
 
-            // REJECT
-            view = Proxy.GetValue(container.GetEntityView(cardId, "SetSnapshotApprovalStatus", "RejectSnapshot", snapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "reject comment";
-            result = Proxy.DoCommand(container.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
+                card = Pricing.GetPriceCard(cardFriendlyId);
+                snapshot = card.Snapshots.FirstOrDefault(
+                    s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
+                snapshot.Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Draft");
 
-            card = Pricing.GetPriceCard(cardFriendlyId);
-            snapshot = card.Snapshots.FirstOrDefault(s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
-            snapshot.Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Draft");
+                view = Proxy.GetValue(
+                    ShopsContainer.GetEntityView(
+                        cardId,
+                        "SetSnapshotApprovalStatus",
+                        "RequestSnapshotApproval",
+                        snapshotId));
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value =
+                    "request approval second time comment";
+                result = Proxy.DoCommand(container.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeTrue();
 
-            view = Proxy.GetValue(ShopsContainer.GetEntityView(cardId, "SetSnapshotApprovalStatus", "RequestSnapshotApproval", snapshotId));
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "request approval second time comment";
-            result = Proxy.DoCommand(container.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
+                // APPROVE
+                view = Proxy.GetValue(
+                    container.GetEntityView(
+                        cardId,
+                        "SetSnapshotApprovalStatus",
+                        "ApproveSnapshot",
+                        snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "approve comment";
+                result = Proxy.DoCommand(container.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeTrue();
 
-            // APPROVE
-            view = Proxy.GetValue(container.GetEntityView(cardId, "SetSnapshotApprovalStatus", "ApproveSnapshot", snapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "approve comment";
-            result = Proxy.DoCommand(container.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
+                card = Pricing.GetPriceCard(cardFriendlyId);
+                snapshot = card.Snapshots.FirstOrDefault(
+                    s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
+                snapshot.Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>()
+                    .FirstOrDefault()
+                    ?.Status.Should()
+                    .Be("Approved");
 
-            card = Pricing.GetPriceCard(cardFriendlyId);
-            snapshot = card.Snapshots.FirstOrDefault(s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
-            snapshot.Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Approved");
+                // RETRACT
+                view = Proxy.GetValue(
+                    container.GetEntityView(
+                        cardId,
+                        "SetSnapshotApprovalStatus",
+                        "RetractSnapshot",
+                        snapshotId));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "retract comment";
+                result = Proxy.DoCommand(container.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase))
+                    .Should()
+                    .BeTrue();
 
-            // RETRACT
-            view = Proxy.GetValue(container.GetEntityView(cardId, "SetSnapshotApprovalStatus", "RetractSnapshot", snapshotId));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Comment")).Value = "retract comment";
-            result = Proxy.DoCommand(container.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Messages.Any(m => m.Code.Equals("information", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
-
-            card = Pricing.GetPriceCard(cardFriendlyId);
-            snapshot = card.Snapshots.FirstOrDefault(s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
-            snapshot.Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
-            snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Draft");
+                card = Pricing.GetPriceCard(cardFriendlyId);
+                snapshot = card.Snapshots.FirstOrDefault(
+                    s => s.Id.Equals(snapshotId, StringComparison.OrdinalIgnoreCase));
+                snapshot.Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault().Should().NotBeNull();
+                snapshot?.SnapshotComponents.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Draft");
+            }
         }
-
         #endregion
 
         #region Tiers
-
         private static void AddCurrency()
         {
-            Console.WriteLine("Begin AddCurrency");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _cardId,
+                        "PriceRow",
+                        "SelectCurrency",
+                        $"{_snapshotId}"));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().BeEmpty();
 
-            var view = Proxy.GetValue(AuthoringContainer.GetEntityView(CardId, "PriceRow", "SelectCurrency", $"{_priceSnapshotId}"));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().BeEmpty();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("Currency")).Value = "USD";
+                var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                view = result.Models.OfType<EntityView>().FirstOrDefault(v => v.Name.Equals(view.Name));
+                view.Should().NotBeNull();
+                view?.Policies.Should().BeEmpty();
+                view?.Properties.Should().NotBeEmpty();
+                view?.ChildViews.Should().NotBeEmpty();
+                view?.Action.Should().Be("AddCurrency");
 
-            view.Properties.FirstOrDefault(p => p.Name.Equals("Currency")).Value = "USD";
-            var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            view = result.Models.OfType<EntityView>().FirstOrDefault(v => v.Name.Equals(view.Name));
-            view.Should().NotBeNull();
-            view?.Policies.Should().BeEmpty();
-            view?.Properties.Should().NotBeEmpty();
-            view?.ChildViews.Should().NotBeEmpty();
-            view?.Action.Should().Be("AddCurrency");
+                ((EntityView)view.ChildViews.FirstOrDefault()).Properties
+                    .FirstOrDefault(p => p.Name.Equals("Quantity"))
+                    .Value = "1";
+                ((EntityView)view.ChildViews.FirstOrDefault()).Properties.FirstOrDefault(p => p.Name.Equals("Price"))
+                    .Value = "20";
+                result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+                result.Models.OfType<PriceTierAdded>().FirstOrDefault().Should().NotBeNull();
 
-            ((EntityView)view.ChildViews.FirstOrDefault()).Properties.FirstOrDefault(p => p.Name.Equals("Quantity")).Value = "1";
-            ((EntityView)view.ChildViews.FirstOrDefault()).Properties.FirstOrDefault(p => p.Name.Equals("Price")).Value = "20";
-            result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
-            result.Models.OfType<PriceTierAdded>().FirstOrDefault().Should().NotBeNull();
-
-            view = Proxy.GetValue(AuthoringContainer.GetEntityView(CardId, "PriceRow", string.Empty, $"{_priceSnapshotId}|USD"));
-            view.Should().NotBeNull();
-            view.Properties.Should().NotBeEmpty();
+                view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _cardId,
+                        "PriceRow",
+                        string.Empty,
+                        $"{_snapshotId}|USD"));
+                view.Should().NotBeNull();
+                view.Properties.Should().NotBeEmpty();
+            }
         }
 
         private static void EditCurrency()
         {
-            Console.WriteLine("Begin EditCurrency");
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _cardId,
+                        "PriceRow",
+                        "EditCurrency",
+                        $"{_snapshotId}|USD"));
+                view.Should().NotBeNull();
+                view.Policies.Should().BeEmpty();
+                view.Properties.Should().NotBeEmpty();
+                view.ChildViews.Should().NotBeEmpty();
 
-            var view = Proxy.GetValue(AuthoringContainer.GetEntityView(CardId, "PriceRow", "EditCurrency", $"{_priceSnapshotId}|USD"));
-            view.Should().NotBeNull();
-            view.Policies.Should().BeEmpty();
-            view.Properties.Should().NotBeEmpty();
-            view.ChildViews.Should().NotBeEmpty();
-            
-            ((EntityView)view.ChildViews.FirstOrDefault()).Properties.FirstOrDefault(p => p.Name.Equals("Price")).Value = "200";
-            var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                ((EntityView)view.ChildViews.FirstOrDefault()).Properties.FirstOrDefault(p => p.Name.Equals("Price"))
+                    .Value = "200";
+                var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
 
-            view = Proxy.GetValue(AuthoringContainer.GetEntityView(CardId, "PriceRow", string.Empty, $"{_priceSnapshotId}|USD"));
-            view.Should().NotBeNull();
-            view.Properties.FirstOrDefault(p => p.Name.Equals("1.0")).Should().NotBeNull();
-            view.Properties.FirstOrDefault(p => p.Name.Equals("1.0"))?.Value.Should().Be("200.0");
+                view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _cardId,
+                        "PriceRow",
+                        string.Empty,
+                        $"{_snapshotId}|USD"));
+                view.Should().NotBeNull();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("1.0")).Should().NotBeNull();
+                view.Properties.FirstOrDefault(p => p.Name.Equals("1.0"))?.Value.Should().Be("200.0");
+            }
         }
 
         private static void RemoveCurrency()
         {
-            Console.WriteLine("Begin RemoveCurrency");
-            
-            var view = Proxy.GetValue(AuthoringContainer.GetEntityView(CardId, "PriceRow", string.Empty, $"{_priceSnapshotId}|USD"));
+            using (new SampleMethodScope())
+            {
+                var view = Proxy.GetValue(
+                    AuthoringContainer.GetEntityView(
+                        _cardId,
+                        "PriceRow",
+                        string.Empty,
+                        $"{_snapshotId}|USD"));
 
-            var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
+                var version = view.Properties.FirstOrDefault(p => p.Name.Equals("Version"));
 
-            view.Action = "RemoveCurrency";
-            view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      version
-                                  };
+                view.Action = "RemoveCurrency";
+                view.Properties = new ObservableCollection<ViewProperty>
+                {
+                    version
+                };
 
-            var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+                var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
+                result.Messages.Should().NotContainErrors();
+            }
         }
-
         #endregion
     }
 }

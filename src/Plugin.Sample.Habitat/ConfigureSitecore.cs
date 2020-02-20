@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigureSitecore.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2016 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
 
 namespace Plugin.Sample.Habitat
 {
@@ -38,11 +34,11 @@ namespace Plugin.Sample.Habitat
                             d =>
                             {
                                 d.Add<InitializeCatalogBlock>()
-                                .Add<InitializeEnvironmentSellableItemsBlock>()
-                                .Add<InitializeEnvironmentBundlesBlock>()
-                                .Add<InitializeInventoryBlock>()
-                                .Add<InitializeEnvironmentPricingBlock>()
-                                .Add<InitializeEnvironmentPromotionsBlock>();
+                                    .Add<InitializeEnvironmentSellableItemsBlock>()
+                                    .Add<InitializeEnvironmentBundlesBlock>()
+                                    .Add<InitializeInventoryBlock>()
+                                    .Add<InitializeEnvironmentPricingBlock>()
+                                    .Add<InitializeEnvironmentPromotionsBlock>();
                             })
                         .ConfigurePipeline<IRunningPluginsPipeline>(c =>
                         {

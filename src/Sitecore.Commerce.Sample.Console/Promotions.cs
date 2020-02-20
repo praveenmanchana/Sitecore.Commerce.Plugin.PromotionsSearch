@@ -1,11 +1,12 @@
 ﻿namespace Sitecore.Commerce.Sample.Console
 {
-    using System.Diagnostics;
+    using System;
     using System.Linq;
 
     using FluentAssertions;
 
     using Sitecore.Commerce.Core;
+    using Sitecore.Commerce.Extensions;
     using Sitecore.Commerce.Plugin.Promotions;
     using Sitecore.Commerce.Sample.Contexts;
     using Sitecore.Commerce.ServiceProxy;
@@ -18,51 +19,53 @@
 
         public static void RunScenarios()
         {
-            var watch = new Stopwatch();
-            watch.Start();
+            using (new SampleScenarioScope("Promotions"))
+            {
+                GetPromotionBook();
+                GetBookAssociatedCatalogs();
 
-            System.Console.WriteLine("Begin PromotionsBooksAndCards");
-
-            GetPromotionBook();
-            GetBookAssociatedCatalogs();
-
-            GetPromotion();
-
-            watch.Stop();
-
-            System.Console.WriteLine($"End PromotionsBooksAndCards :{watch.ElapsedMilliseconds} ms");
+                GetPromotion("AdventureWorksPromotionBook-CartFreeShippingPromotion");
+            }
         }
-        
-        public static Promotion GetPromotion(string promotionFriendlyId = "")
+
+        public static Promotion GetPromotion(string promotionFriendlyId)
         {
-            System.Console.WriteLine("Begin GetPromotion");
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.GetValue(AuthoringContainer.Promotions.ByKey(promotionFriendlyId).Expand("Components"));
+                result.Should().NotBeNull();
+                result.Components.Should().NotBeEmpty();
+                result.Components.OfType<ApprovalComponent>().Any().Should().BeTrue();
 
-            var friendlyId = string.IsNullOrEmpty(promotionFriendlyId)
-                                 ? "AdventureWorksPromotionBook-CartFreeShippingPromotion"
-                                 : promotionFriendlyId;
-
-            var result = Proxy.GetValue(AuthoringContainer.Promotions.ByKey(friendlyId).Expand("Components"));
-            result.Should().NotBeNull();
-            result.Components.Should().NotBeEmpty();
-            result.Components.OfType<ApprovalComponent>().Any().Should().BeTrue();
-
-            return result;
+                return result;
+            }
         }
 
-        private static void GetPromotionBook()
+        public static PromotionBook GetPromotionBook(string bookName = "")
         {
-            System.Console.WriteLine("Begin GetPromotionBook");
+            using (new SampleMethodScope())
+            {
+                if (string.IsNullOrEmpty(bookName))
+                {
+                    bookName = "AdventureWorksPromotionBook";
+                }
 
-            var result = Proxy.GetValue(ShopsContainer.PromotionBooks.ByKey("AdventureWorksPromotionBook").Expand("Components"));
-            result.Should().NotBeNull();
+                var result = Proxy.GetValue(
+                    ShopsContainer.PromotionBooks.ByKey(bookName).Expand("Components"));
+                result.Should().NotBeNull();
+
+                return result;
+            }
         }
-        
+
         private static void GetBookAssociatedCatalogs()
         {
-            System.Console.WriteLine("Begin GetBookAssociatedCatalogs");
-
-            var result = Proxy.Execute(ShopsContainer.GetPromotionBookAssociatedCatalogs("AdventureWorksPromotionBook"));
-            result.Should().NotBeNull();
+            using (new SampleMethodScope())
+            {
+                var result = Proxy.Execute(
+                    ShopsContainer.GetPromotionBookAssociatedCatalogs("AdventureWorksPromotionBook"));
+                result.Should().NotBeNull();
+            }
         }
     }
 }

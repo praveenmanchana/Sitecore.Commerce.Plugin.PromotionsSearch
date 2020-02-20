@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "50d910a0-73d8-4525-9e16-ec818690fa83",
+		"_postman_id": "5f7b0c8c-28b6-4054-a1c6-18bfe22026bc",
 		"name": "Promotions Search",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -75,15 +75,7 @@
 					"script": {
 						"id": "c32875ff-38df-40da-b7cc-59bc360eef13",
 						"exec": [
-							"var jsonData = JSON.parse(responseBody);",
-							"",
-							"function findBookAdded(model) {",
-							"    var type = '@odata.type';",
-							"    return model[type] === '#Sitecore.Commerce.Plugin.Pricing.PriceBookAdded';",
-							"}",
-							"",
-							"postman.setGlobalVariable(\"BookId\", \"Entity-PriceBook-\" + jsonData.Models.find(findBookAdded).Name);",
-							"postman.setGlobalVariable(\"BookName\", jsonData.Models.find(findBookAdded).Name);"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -123,7 +115,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"scope\":\"Commerce91_PromotionsScope\",\r\n    \"term\": \"*\",\r\n    \"filter\": \"status=Draft\",\r\n    \"orderBy\": \"\",\r\n    \"skip\": 0,\r\n    \"top\": 10\r\n} "
+					"raw": "{\r\n    \"scope\":\"sc92_PromotionsScope\",\r\n    \"term\": \"*\",\r\n    \"filter\": \"status=Draft\",\r\n    \"orderBy\": \"\",\r\n    \"skip\": 0,\r\n    \"top\": 10\r\n} "
 				},
 				"url": {
 					"raw": "{{ServiceHost}}/{{ShopsApi}}/Search()",

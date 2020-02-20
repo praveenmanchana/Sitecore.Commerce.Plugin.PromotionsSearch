@@ -1,21 +1,15 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InitializeCatalogBlock.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2017 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
+
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Internal;
+using Sitecore.Commerce.Core;
+using Sitecore.Commerce.Plugin.Catalog;
+using Sitecore.Framework.Pipelines;
 
 namespace Plugin.Sample.Habitat
 {
-    using System.IO;
-    using System.Threading.Tasks;
-
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http.Internal;
-
-    using Sitecore.Commerce.Core;
-    using Sitecore.Commerce.Plugin.Catalog;
-    using Sitecore.Framework.Pipelines;
-
     /// <summary>
     /// Ensure Habitat catalog has been loaded.
     /// </summary>
@@ -40,8 +34,8 @@ namespace Plugin.Sample.Habitat
             IHostingEnvironment hostingEnvironment,
             ImportCatalogsCommand importCatalogsCommand)
         {
-            this._hostingEnvironment = hostingEnvironment;
-            this._importCatalogsCommand = importCatalogsCommand;
+            _hostingEnvironment = hostingEnvironment;
+            _importCatalogsCommand = importCatalogsCommand;
         }
 
         /// <summary>
@@ -60,19 +54,41 @@ namespace Plugin.Sample.Habitat
                 return arg;
             }
 
-            using (var stream = new FileStream(GetPath("Habitat.zip"), FileMode.Open, FileAccess.Read))
+            // Similar LocalizationEntity entities are imported from a zip archive file and from creating it automatically, therefore skip LocalizeEntityBlock in IPrepPersistEntityPipeline to prevent SQL constraint violation.
+            context.CommerceContext.AddPolicyKeys(new[]
             {
-                var file = new FormFile(stream, 0, stream.Length, stream.Name, stream.Name);
+                "IgnoreLocalizeEntity"
+            });
 
-                await this._importCatalogsCommand.Process(context.CommerceContext, file, CatalogConstants.Replace, 10).ConfigureAwait(false);
-            }
+            await ImportCatalogAsync(context).ConfigureAwait(false);
+
+            // Remove the IgnoreLocalizeEntity, to enable localization for InitializeEnvironmentBundlesBlock
+            context.CommerceContext.RemovePolicyKeys(new[]
+            {
+                "IgnoreLocalizeEntity"
+            });
 
             return arg;
         }
 
+        /// <summary>
+        /// Import catalog from file.
+        /// </summary>
+        /// <param name="context">The context to execute <see cref="ImportCatalogsCommand"/>.</param>
+        /// <returns></returns>
+        protected virtual async Task ImportCatalogAsync(CommercePipelineExecutionContext context)
+        {
+            using (var stream = new FileStream(GetPath("Habitat.zip"), FileMode.Open, FileAccess.Read))
+            {
+                var file = new FormFile(stream, 0, stream.Length, stream.Name, stream.Name);
+
+                await _importCatalogsCommand.Process(context.CommerceContext, file, CatalogConstants.Replace, -1, 10).ConfigureAwait(false);
+            }
+        }
+
         private string GetPath(string fileName)
         {
-            return Path.Combine(this._hostingEnvironment.WebRootPath, "data", "Catalogs", fileName);
+            return Path.Combine(_hostingEnvironment.WebRootPath, "data", "Catalogs", fileName);
         }
     }
 }

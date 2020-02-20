@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InitializeInventoryBlock.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// © 2017 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
 
 namespace Plugin.Sample.AdventureWorks
 {
@@ -71,7 +67,7 @@ namespace Plugin.Sample.AdventureWorks
             using (var stream = new FileStream(this.GetPath("AdventureWorks_Inventory.zip"), FileMode.Open, FileAccess.Read))
             {
                 var file = new FormFile(stream, 0, stream.Length, stream.Name, stream.Name);
-                await this.ImportInventorySetsCommand.Process(context.CommerceContext, file, CatalogConstants.Replace, 10).ConfigureAwait(false);
+                await this.ImportInventorySetsCommand.Process(context.CommerceContext, file, CatalogConstants.Replace, -1, 10).ConfigureAwait(false);
             }
 
             return arg;

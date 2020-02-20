@@ -67,34 +67,37 @@ namespace Plugin.Sample.AdventureWorks
             context.Logger.LogInformation($"{this.Name}.InitializingArtifactSet: ArtifactSet={artifactSet}");
 
             // Add stock gift cards for testing
-            await this._persistEntityPipeline.Run(
-                new PersistEntityArgument(
-                    new GiftCard(new List<Component>
-                    {
-                        new ListMembershipsComponent { Memberships = new List<string> { CommerceEntity.ListName<Entitlement>(), CommerceEntity.ListName<GiftCard>() } }
-                    })
-                    {
-                        Id = $"{CommerceEntity.IdPrefix<GiftCard>()}GC1000000",
-                        Name = "Test Gift Card ($1,000,000)",
-                        Balance = new Money("USD", 1000000M),
-                        ActivationDate = DateTimeOffset.UtcNow,
-                        Customer = new EntityReference { EntityTarget = "DefaultCustomer" },
-                        OriginalAmount = new Money("USD", 1000000M),
-                        GiftCardCode = "GC1000000"
-                    }),
-                context).ConfigureAwait(false);
+            var result = await this._persistEntityPipeline.Run(
+                    new PersistEntityArgument(
+                        new GiftCard(new List<Component>
+                        {
+                            new ListMembershipsComponent { Memberships = new List<string> { CommerceEntity.ListName<Entitlement>(), CommerceEntity.ListName<GiftCard>() } }
+                        })
+                        {
+                            Id = $"{CommerceEntity.IdPrefix<GiftCard>()}GC1000000",
+                            Name = "Test Gift Card ($1,000,000)",
+                            Balance = new Money("USD", 1000000M),
+                            ActivationDate = DateTimeOffset.UtcNow,
+                            Customer = new EntityReference { EntityTarget = "DefaultCustomer" },
+                            OriginalAmount = new Money("USD", 1000000M),
+                            GiftCardCode = "GC1000000"
+                        }),
+                    context)
+                .ConfigureAwait(false);
 
             await this._persistEntityPipeline.Run(
-                new PersistEntityArgument(
-                    new EntityIndex
-                    {
-                        Id = $"{EntityIndex.IndexPrefix<GiftCard>("Id")}GC1000000",
-                        IndexKey = "GC1000000",
-                        EntityId = $"{CommerceEntity.IdPrefix<GiftCard>()}GC1000000"
-                    }), 
-                context).ConfigureAwait(false);
+                    new PersistEntityArgument(
+                        new EntityIndex
+                        {
+                            Id = $"{EntityIndex.IndexPrefix<GiftCard>("Id")}GC1000000",
+                            IndexKey = "GC1000000",
+                            EntityId = $"{CommerceEntity.IdPrefix<GiftCard>()}GC1000000",
+                            EntityUniqueId = result.Entity.UniqueId
+                        }), 
+                    context)
+                .ConfigureAwait(false);
 
-            await this._persistEntityPipeline.Run(
+            result = await this._persistEntityPipeline.Run(
                 new PersistEntityArgument(
                     new GiftCard(new List<Component>
                     {
@@ -117,11 +120,12 @@ namespace Plugin.Sample.AdventureWorks
                     {
                         Id = $"{EntityIndex.IndexPrefix<GiftCard>("Id")}GC100B",
                         IndexKey = "GC100B",
-                        EntityId = $"{CommerceEntity.IdPrefix<GiftCard>()}GC100B"
+                        EntityId = $"{CommerceEntity.IdPrefix<GiftCard>()}GC100B",
+                        EntityUniqueId = result.Entity.UniqueId
                     }), 
                 context).ConfigureAwait(false);
 
-            await this._persistEntityPipeline.Run(
+            result = await this._persistEntityPipeline.Run(
                 new PersistEntityArgument(
                     new GiftCard(new List<Component>
                     {
@@ -144,7 +148,8 @@ namespace Plugin.Sample.AdventureWorks
                     {
                         Id = $"{EntityIndex.IndexPrefix<GiftCard>("Id")}GC100",
                         IndexKey = "GC100",
-                        EntityId = $"{CommerceEntity.IdPrefix<GiftCard>()}GC100"
+                        EntityId = $"{CommerceEntity.IdPrefix<GiftCard>()}GC100",
+                        EntityUniqueId = result.Entity.UniqueId
                     }), 
                 context).ConfigureAwait(false);
 

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "16fe451e-cb93-45dd-b8e1-6a164a299673",
+		"_postman_id": "d7c4edad-7d0c-4908-8ace-61d310287382",
 		"name": "PromotionsAPISamples",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -133,6 +133,71 @@
 					"response": []
 				},
 				{
+					"name": "Get promotion book by UniqueId (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/PromotionBooks('f5b4a897-468e-623b-bc6a-64a03fcc4251')?$expand=Components",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"PromotionBooks('f5b4a897-468e-623b-bc6a-64a03fcc4251')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get promotions",
 					"request": {
 						"method": "GET",
@@ -245,6 +310,71 @@
 							"path": [
 								"{{ShopsApi}}",
 								"Promotions('{{PromotionFriendlyId}}')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Components"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get promotion by UniqueId (Habitat)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "ShopName",
+								"value": "{{ShopName}}"
+							},
+							{
+								"key": "ShopperId",
+								"value": "{{ShopperId}}"
+							},
+							{
+								"key": "Language",
+								"value": "{{Language}}"
+							},
+							{
+								"key": "Currency",
+								"value": "{{Currency}}"
+							},
+							{
+								"key": "Environment",
+								"value": "{{Environment}}"
+							},
+							{
+								"key": "GeoLocation",
+								"value": "{{GeoLocation}}"
+							},
+							{
+								"key": "CustomerId",
+								"value": "{{CustomerId}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SitecoreIdToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ServiceHost}}/{{ShopsApi}}/Promotions('b5133b3f-4649-64bc-879e-8ee53f52a771')?$expand=Components",
+							"host": [
+								"{{ServiceHost}}"
+							],
+							"path": [
+								"{{ShopsApi}}",
+								"Promotions('b5133b3f-4649-64bc-879e-8ee53f52a771')"
 							],
 							"query": [
 								{

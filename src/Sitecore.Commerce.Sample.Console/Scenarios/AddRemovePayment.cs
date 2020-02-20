@@ -3,7 +3,6 @@
     using System;
     using System.Diagnostics;
     using System.Linq;
-    using System.Threading.Tasks;
 
     using Core;
     using Extensions;
@@ -19,76 +18,66 @@
     {
         public static string ScenarioName = "AddRemovePayment";
 
-        public static Task<string> Run(ShopperContext context)
+        public static string Run(ShopperContext context)
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            try
+            using (new SampleBuyScenarioScope())
             {
-                var container = context.ShopsContainer();
+                try
+                {
+                    var container = context.ShopsContainer();
+                    
+                    var cartId = Carts.GenerateCartId();
 
-                Console.WriteLine($"Begin {ScenarioName}");
+                    //Add Cart Line with Variant
+                    Proxy.DoCommand(container.AddCartLine(cartId, "Adventure Works Catalog|AW098 04|5", 1));
 
-                var cartId = Guid.NewGuid().ToString("B");
+                    //Add Cart Line without Variant
+                    Proxy.DoCommand(container.AddCartLine(cartId, "Adventure Works Catalog|AW475 14|", 1));
 
-                //Add Cart Line with Variant
-                Proxy.DoCommand(
-                    container.AddCartLine(cartId, "Adventure Works Catalog|AW098 04|5", 1)
-                );
+                    var commandResult = Proxy.DoCommand(
+                        container.SetCartFulfillment(
+                            cartId,
+                            context.Components.OfType<PhysicalFulfillmentComponent>().First()));
 
-                //Add Cart Line without Variant
-                Proxy.DoCommand(
-                    container.AddCartLine(cartId, "Adventure Works Catalog|AW475 14|", 1)
-                );
+                    var totals = commandResult.Models.OfType<Totals>().First();
 
-                var commandResult = Proxy.DoCommand(
-                    container.SetCartFulfillment(cartId,
-                    context.Components.OfType<PhysicalFulfillmentComponent>().First())
-                );
+                    var paymentComponent = context.Components.OfType<FederatedPaymentComponent>().First();
+                    paymentComponent.Amount = Money.CreateMoney(totals.GrandTotal.Amount);
 
-                var totals = commandResult.Models.OfType<Totals>().First();
+                    Proxy.DoCommand(
+                        container.AddFederatedPayment(
+                            cartId,
+                            paymentComponent));
 
-                var paymentComponent = context.Components.OfType<FederatedPaymentComponent>().First();
-                paymentComponent.Amount = Money.CreateMoney(totals.GrandTotal.Amount);
+                    var cart = Proxy.GetValue(
+                        container.Carts.ByKey(cartId).Expand("Lines($expand=CartLineComponents),Components"));
 
-                Proxy.DoCommand(
-                    container.AddFederatedPayment(cartId, 
-                    paymentComponent)
-                );
+                    var federatedPaymentComponent = cart.Components.OfType<FederatedPaymentComponent>().First();
 
-                var cart = Proxy.GetValue(container.Carts.ByKey(cartId).Expand("Lines($expand=CartLineComponents),Components"));
+                    container.RemovePayment(cartId, federatedPaymentComponent.Id).GetValue();
 
-                var federatedPaymentComponent = cart.Components.OfType<FederatedPaymentComponent>().First();
+                    cart = Proxy.GetValue(
+                        container.Carts.ByKey(cartId).Expand("Lines($expand=CartLineComponents),Components"));
 
-                container.RemovePayment(cartId, federatedPaymentComponent.Id).GetValue();
+                    paymentComponent = context.Components.OfType<FederatedPaymentComponent>().First();
+                    paymentComponent.Amount = Money.CreateMoney(cart.Totals.GrandTotal.Amount);
 
-                cart = Proxy.GetValue(container.Carts.ByKey(cartId).Expand("Lines($expand=CartLineComponents),Components"));
+                    Proxy.DoCommand(container.AddFederatedPayment(cartId, paymentComponent));
 
-                paymentComponent = context.Components.OfType<FederatedPaymentComponent>().First();
-                paymentComponent.Amount = Money.CreateMoney(cart.Totals.GrandTotal.Amount);
+                    var order = Orders.CreateAndValidateOrder(container, cartId, context);
 
-                Proxy.DoCommand(
-                    container.AddFederatedPayment(cartId, 
-                    paymentComponent)
-                );
-
-                var order = Orders.CreateAndValidateOrder(container, cartId, context);
-
-                watch.Stop();
-
-                order.Totals.GrandTotal.Amount.Should().Be(180.40M);
-
-                Console.WriteLine($"End {ScenarioName} (${order.Totals.GrandTotal.Amount}):{watch.ElapsedMilliseconds} ms");
-
-                return Task.FromResult(order.Id);
-            }
-            catch (Exception ex)
-            {
-                ConsoleExtensions.WriteColoredLine(ConsoleColor.Red, $"Exception in Scenario {ScenarioName} (${ex.Message}) : Stack={ex.StackTrace}");
-                return null;
+                    order.Totals.GrandTotal.Amount.Should().Be(180.40M);
+                    
+                    return order.Id;
+                }
+                catch (Exception ex)
+                {
+                    ConsoleExtensions.WriteColoredLine(
+                        ConsoleColor.Red,
+                        $"Exception in Scenario {ScenarioName} (${ex.Message}) : Stack={ex.StackTrace}");
+                    return null;
+                }
             }
         }
-
     }
 }

@@ -17,7 +17,6 @@
 
     public static class PromotionsUX
     {
-        private const string BookName = "consoleuxpromotionbook";
         private const string ItemId = "Entity-SellableItem-AW055 01|33";
         private const string Catalog = "Adventure Works Catalog";
         private const string CompleteItem = "Adventure Works Catalog|AW055 01|33";
@@ -85,7 +84,6 @@
         }
 
         #region Books
-
         private static void Books()
         {
             Console.WriteLine("Begin PromotionBooks View");
@@ -145,21 +143,22 @@
             view.ChildViews.Should().BeEmpty();
 
             view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "Name", Value = "InvalidBookName%(" },
-                                      new ViewProperty { Name = "DisplayName", Value = "displayname" },
-                                      new ViewProperty { Name = "Description", Value = "description" }
-                                  };
+            {
+                new ViewProperty { Name = "Name", Value = "InvalidBookName%(" },
+                new ViewProperty { Name = "DisplayName", Value = "displayname" },
+                new ViewProperty { Name = "Description", Value = "description" }
+            };
             var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("ValidationError", StringComparison.OrdinalIgnoreCase)).Should().BeTrue();
             ConsoleExtensions.WriteColoredLine(ConsoleColor.Yellow, "Expected error");
 
+            var partial = $"{Guid.NewGuid():N}".Substring(0, 5);
             view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "Name", Value = BookName },
-                                      new ViewProperty { Name = "DisplayName", Value = "displayname" },
-                                      new ViewProperty { Name = "Description", Value = "description" }
-                                  };
+            {
+                new ViewProperty { Name = "Name", Value = $"Console{partial}" },
+                new ViewProperty { Name = "DisplayName", Value = "displayname" },
+                new ViewProperty { Name = "Description", Value = "description" }
+            };
             result = Proxy.DoCommand(ShopsContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase) || m.Code.Equals("ValidationError", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
             _bookId = $"Entity-PromotionBook-{result.Models.OfType<PromotionBookAdded>().FirstOrDefault()?.PromotionBookFriendlyId}";
@@ -283,11 +282,9 @@
             var result = Proxy.DoCommand(ShopsContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
         }
-
         #endregion
 
         #region Promotions
-
         private static void PromotionMaster(string promotionId)
         {
             Console.WriteLine("Begin PromotionMaster View");
@@ -339,25 +336,25 @@
             var fromDate = validFrom ?? DateTimeOffset.Now;
             var toDate = validTo ?? DateTimeOffset.Now.AddDays(30);
             view.Properties = new ObservableCollection<ViewProperty>
-                                  {
-                                      new ViewProperty { Name = "Name", Value = name },
-                                      new ViewProperty { Name = "Description", Value = "promotion's description" },
-                                      new ViewProperty { Name = "DisplayName", Value = "promotion's display name" },
-                                      new ViewProperty { Name = "DisplayText", Value = "promotion's text" },
-                                      new ViewProperty { Name = "DisplayCartText", Value = "promotion's cart text" },
-                                      new ViewProperty
-                                          {
-                                              Name = "ValidFrom",
-                                              Value = fromDate.ToString(CultureInfo.InvariantCulture)
-                                          },
-                                      new ViewProperty
-                                          {
-                                              Name = "ValidTo",
-                                              Value = toDate.ToString(CultureInfo.InvariantCulture)
-                                          },
-                                      new ViewProperty { Name = "IsExclusive", Value = "true" },
-                                      version
-                                  };
+            {
+                new ViewProperty { Name = "Name", Value = name },
+                new ViewProperty { Name = "Description", Value = "promotion's description" },
+                new ViewProperty { Name = "DisplayName", Value = "promotion's display name" },
+                new ViewProperty { Name = "DisplayText", Value = "promotion's text" },
+                new ViewProperty { Name = "DisplayCartText", Value = "promotion's cart text" },
+                new ViewProperty
+                {
+                    Name = "ValidFrom",
+                    Value = fromDate.ToString(CultureInfo.InvariantCulture)
+                },
+                new ViewProperty
+                {
+                    Name = "ValidTo",
+                    Value = toDate.ToString(CultureInfo.InvariantCulture)
+                },
+                new ViewProperty { Name = "IsExclusive", Value = "true" },
+                version
+            };
             var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
             result.Models.OfType<PromotionAdded>().FirstOrDefault().Should().NotBeNull();
@@ -633,11 +630,9 @@
             promotion = Promotions.GetPromotion(promotionFriendlyId);
             promotion.Components.OfType<ApprovalComponent>().FirstOrDefault()?.Status.Should().Be("Approved");
         }
-
         #endregion
 
         #region Qualifications
-
         private static void Qualifications(string promotionId)
         {
             Console.WriteLine("Begin Qualifications View");
@@ -721,7 +716,7 @@
                                       version
                                   };
             var action = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+            action.Messages.Should().NotContainErrors();
         }
 
         private static void DeleteQualification(string promotionId, string qualificationId)
@@ -737,11 +732,9 @@
             var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
         }
-
         #endregion
 
         #region Benefits
-
         private static void Benefits(string promotionId)
         {
             Console.WriteLine("Begin Benefits View");
@@ -823,7 +816,7 @@
                                       version
                                   };
             var action = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+            action.Messages.Should().NotContainErrors();
         }
 
         private static void DeleteBenefit(string promotionId, string benefitId)
@@ -839,11 +832,9 @@
             var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
         }
-
         #endregion
 
         #region Items
-
         private static void Items(string promotionId)
         {
             Console.WriteLine("Begin Items View");
@@ -887,7 +878,7 @@
                                       version
                                   };
             var action = Proxy.DoCommand(AuthoringContainer.DoAction(view));
-            action.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
+            action.Messages.Should().NotContainErrors();
             action.Models.OfType<PromotionItemAdded>().FirstOrDefault()?.PromotionItemId.Should().NotBeNullOrEmpty();
         }
 
@@ -910,7 +901,6 @@
             var result = Proxy.DoCommand(AuthoringContainer.DoAction(view));
             result.Messages.Any(m => m.Code.Equals("error", StringComparison.OrdinalIgnoreCase)).Should().BeFalse();
         }
-
         #endregion
     }
 }

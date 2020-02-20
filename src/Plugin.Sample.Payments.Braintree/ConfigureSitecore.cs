@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigureSitecore.cs" company="Sitecore Corporation">
-//   Copyright (c) Sitecore Corporation 1999-2018
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿//  © 2017 Sitecore Corporation A/S. All rights reserved. Sitecore® is a registered trademark of Sitecore Corporation A/S.
 
 namespace Plugin.Sample.Payments.Braintree
 {
@@ -13,6 +9,7 @@ namespace Plugin.Sample.Payments.Braintree
     using Sitecore.Commerce.Core;
     using Sitecore.Commerce.Plugin.Orders;
     using Sitecore.Commerce.Plugin.Payments;
+    using Sitecore.Commerce.Plugin.FaultInjection;
     using Sitecore.Framework.Configuration;
     using Sitecore.Framework.Pipelines.Definitions.Extensions;
 
@@ -47,11 +44,6 @@ namespace Plugin.Sample.Payments.Braintree
                 {
                     d.Add<UpdateFederatedPaymentBlock>().After<ValidateOnHoldOrderBlock>();
                 })
-                .ConfigurePipeline<ISettleSalesActivityPipeline>(d =>
-                {
-                    d.Add<SettleFederatedPaymentBlock>().After<ValidateSalesActivityBlock>()
-                     .Add<UpdateOrderAfterFederatedPaymentSettlementBlock>().After<SettleFederatedPaymentBlock>();
-                })
                 .ConfigurePipeline<IRefundPaymentsPipeline>(d =>
                 {
                     d.Add<RefundFederatedPaymentBlock>().Before<PersistOrderBlock>();
@@ -60,8 +52,8 @@ namespace Plugin.Sample.Payments.Braintree
                 {
                     d.Add<VoidCancelOrderFederatedPaymentBlock>().After<GetPendingOrderBlock>();
                 })
-
-                .ConfigurePipeline<IRunningPluginsPipeline>(c => { c.Add<RegisteredPluginBlock>().After<RunningPluginsBlock>(); }));
+                .ConfigurePipeline<IRunningPluginsPipeline>(c => { c.Add<RegisteredPluginBlock>().After<RunningPluginsBlock>(); })
+                .ConfigurePipeline<IReleasedOrdersMinionPipeline>(c => { c.Add<SettleOrderSalesActivitiesBlock>().After<SettlePaymentFaultBlock>(); }));
 
             services.RegisterAllCommands(assembly);
         }

@@ -15,10 +15,9 @@
 
     public static class CatalogsUX
     {
-        public const string CatalogName = "ConsoleCatalog";
-        public static readonly string CatalogId = $"Entity-Catalog-{CatalogName}";
-        public const string CatalogCloneName = "ConsoleCatalogClone";
-        public static readonly string CatalogCloneId = $"Entity-Catalog-{CatalogCloneName}";
+        public static string CatalogName;
+        public static string CatalogId;
+        public static string CatalogCloneName;
         public static readonly string CatalogExportFilePath = Path.Combine(Path.GetTempPath(), "consolecatalog.zip");
 
         public static void RunScenarios()
@@ -29,6 +28,11 @@
 
             using (new SampleScenarioScope(MethodBase.GetCurrentMethod().DeclaringType.Name))
             {
+                var partial = $"{Guid.NewGuid():N}".Substring(0, 5);
+                CatalogName = $"Console{partial}";
+                CatalogCloneName = $"ConsoleClone{partial}";
+                CatalogId = $"Entity-Catalog-{CatalogName}";
+
                 AddCatalog();
                 EditCatalogUsingAuthoringEnvironment(authoringContainer);
                 TryEditCatalogUsingShopsEnvironment(shopsContainer);
