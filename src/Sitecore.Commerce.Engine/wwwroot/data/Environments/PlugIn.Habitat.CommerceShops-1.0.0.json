@@ -579,10 +579,6 @@
       {
         "$type": "Sitecore.Commerce.Core.PolicySetPolicy, Sitecore.Commerce.Core",
         "PolicySetId": "Entity-PolicySet-PromotionsSearchPolicySet"
-      },
-      {
-        "$type": "Sitecore.Commerce.Core.PolicySetPolicy, Sitecore.Commerce.Core",
-        "PolicySetId": "Entity-PolicySet-PromotionsSearchMinionsPolicySet"
       }
     ]
   }
